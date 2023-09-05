@@ -1,0 +1,65 @@
+---
+title: "Homework 1"
+subtitle: "DSCI 101"
+author: "Your Name Here"
+date: "Due 09-11-2023"
+output: html_document
+---
+Homework should be written as an R Markdown file and the knitted output
+should be submitted. Homework should be turned in on Sakai.
+
+1. (4pts) Set up a github account and create a repository called DSCI101.
+Clone this repo into RStudio: https://github.com/menawhalen/DSCI_101_F23
+
+2. (3pts) Create a numeric vector containing the values 5, 10, 15, 20, and 25. Calculate the mean of this vector and assign it to a variable called `mean_value`. Print the `mean_value`
+
+```{r ex2}
+
+```
+
+
+3. (3pts) Create a data frame with the following information about three of your friends:
+
+* Name (character)
+* Age (numeric)
+* Favorite Color (character)
+
+Make sure to include at least three rows of data. Print the entire data frame. Name it whatever you like.
+
+```{r ex3}
+
+```
+
+4. (3pts) Create two numeric vectors: `vector1` with values 1, 2, 3, and `vector2` with values 4, 5, 6. Perform the following operations:
+
+* Add `vector1` and `vector2` and store the result in a new vector called `sum_vector.`
+* Subtract `vector2` from `vector1` and store the result in a new vector called `diff_vector.`
+* Multiply `vector1` and `vector2` element-wise and store the result in a new vector called `prod_vector.`
+* Divide `vector1` by `vector2` element-wise and store the result in a new vector called `quot_vector.`
+
+Print all four result vectors.
+
+```{r ex4}
+
+```
+
+5. (12pts) Using the `top_colleges_2022` dataset answer the following questions.
+
+a) Read in the csv file and name the variable `college`. This should be simple if question 1 has been completed as the github will download the data folder.
+
+```{r ex5a}
+
+```
+
+b) How many colleges in this data set are in Illinois.
+
+```{r ex5b}
+
+```
+
+c) Find the undergraduate student population of LUC. How man colleges (in this dataset) have a larger undergraduate student population than LUC?
+
+```{r ex5c}
+
+```
+
