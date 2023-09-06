@@ -1,0 +1,279 @@
+---
+title: "Wrangle 1"
+output: html_document
+date: "2023-09-06"
+---
+
+
+## Git and Github
+
+### Git
+Git is a version control system that helps you keep track of changes in your code or any other files. It's like a time machine for your work. Git allows you to:
+
+* Track Changes: You can record every change you make to your files. This includes adding new files, editing existing ones, and deleting files.
+
+* Collaborate with Others: Git is designed for collaboration. Multiple people can work on the same project simultaneously, and Git helps to manage changes and merge them seamlessly (ish).
+
+* Create Backups: Git acts as a backup system. If something goes wrong, you can easily restore your project to a previous state.
+
+* Work Offline: You don't need an internet connection to use Git. You can commit changes to your local repository, and when you're online, you can sync those changes with a remote repository (like GitHub).
+
+### GitHub
+GitHub is a web-based platform that uses Git for version control. It's like a social network for programmers and a hosting platform for Git repositories. Here's what you can do with GitHub:
+
+* Store Code in the Cloud: You can store your Git repositories online. This is particularly useful because it acts as a backup, and you can access your code from anywhere.
+
+Collaborate with Others: GitHub is an excellent platform for team collaboration. You can invite team members to your project, and everyone can work on the same codebase. This is what we will be using for our class to acess notes and labs.
+
+* Share Your Work: GitHub allows you to share your code with the world. You can make your repositories public so that anyone can see your code and contribute to it, or you can keep them private for restricted access.
+
+* Issue Tracking: GitHub provides tools for issue tracking and project management. You can use it to keep track of tasks, bugs, and feature requests.
+
+
+Install Git: Install Git on your computer. Git can be downloaded from the [official website](https://git-scm.com/downloads).
+
+Set Up Git: Open a terminal (or Git Bash on Windows), note that the terminal is present in the console, and configure Git with their name and email address using the following commands:
+
+    git config --global user.name "Your Name"
+    git config --global user.email "youremail@example.com"
+    
+### Rstudio and Github
+
+1. Clone a Repository: In RStudio, go to "File" > "New Project" > "Version Control" > "Git." Paste the URL of your GitHub repository  and choose a directory to clone it into. This directory will be on your computer locally so organize it accordingly.
+
+2. Pull the Latest Changes: Before working on any labs/HW, pull in the git window to get the latest version of the repository. The pull is the green arrow under the Git tab. You will not be committing or pulling to this class. Just *pull*.
+
+3. If you were working with others in a collabrative manner you could be committing and pushing changes after you pull.
+
+* Commits:
+
+  - In Git, a "commit" is like taking a snapshot of your project at a specific moment. It records all the changes you've made since the last snapshot.
+  - Think of commits as checkpoints in your project's history, showing what was changed and who made the changes.
+  - Every commit has a unique ID.
+  - You write a brief message to explain what each commit does.
+
+* Pushing:
+
+  - "Pushing" means sharing your local project changes with others on  GitHub.
+  - It's like uploading your work online so that your team members or collaborators can see and use it.
+  - When you push, you're keeping the shared project up to date.
+
+* Typical Workflow:
+  1. Pull Down Latest Work
+  2. Make Changes
+  3. Record Changes (Commit)
+  4. Share Changes (Push)
+  5. Stay Updated (Pull)
+
+This cycle helps everyone stay coordinated when working on the same project.
+
+## Tidyverse
+
+The tidyverse is a collection of R packages designed to facilitate data manipulation, exploration, visualization, and modeling. It's built around the idea of making data analysis in R more intuitive and efficient by providing a consistent and coherent framework. The tidyverse packages work seamlessly together and share a common underlying philosophy known as the "tidy data" principles.
+
+Key components of the tidyverse include:
+
+1. `dplyr`: This package provides a grammar of data manipulation. It offers a set of functions that allow you to perform common data manipulation tasks, such as filtering, selecting, arranging, and summarizing data. The syntax of dplyr is designed to be intuitive and readable.
+
+2. `tidyr`: The tidyr package helps you reshape and tidy your data. It provides functions to pivot, gather, and spread data, making it easier to convert data between wide and long formats.
+
+3. `ggplot2`: This package is a powerful tool for creating complex and customized visualizations. It follows the "Grammar of Graphics" concept, which allows you to build plots layer by layer using intuitive functions.
+
+4. `readr`: readr offers fast and flexible tools for reading and writing rectangular data, like CSV files. It aims to improve data import efficiency and handle common issues such as missing values and data types.
+
+5. `purrr`: purrr provides functions to work with and manipulate data in a functional programming style. It's particularly useful for working with lists and performing operations on multiple elements simultaneously.
+
+6. `tibble`: tibble is an enhanced data frame that provides better printing and handling of metadata. It's designed to work seamlessly with the other tidyverse packages.
+
+7. `stringr`: stringr focuses on string manipulation. It provides functions for working with character data, like finding, extracting, and modifying substrings.
+
+8. `forcats`: forcats is designed for working with categorical data, providing tools for managing and modifying factor levels effectively.
+
+The tidyverse promotes the concept of ["tidy data"](https://tidyr.tidyverse.org/articles/tidy-data.html) which follows *a structured format where each variable forms a column, each observation forms a row, and each type of observational unit forms a table*. This approach enhances the consistency and clarity of data analysis workflows.
+
+### Why the Tidyverse
+
+We fill focus on these different packages within the tidyverse throughout the course. This of the tidyverse as a "philosophy" of data science. The tidyverse is beneficial to use for
+
+1. Structured Workflow: The tidyverse provides a consistent and intuitive grammar for data manipulation and visualization. This makes code more readable and understandable, enhancing collaboration and making it easier to return to code after time has passed.
+
+2. Efficiency and Readability: Tidyverse functions are optimized for performance, speeding up data manipulation tasks. The `%>%` (called pipe) operator simplifies code by enabling easy chaining of operations, resulting in a more linear and readable structure.
+
+3. Integrated Tools and Community: Tidyverse packages work seamlessly together, offering integrated tools for data analysis and visualization. With an active and supportive community, learning and troubleshooting are more accessible through a wealth of tutorials and resources.
+
+### Install the Tidyverse
+
+You must first start by installing the tidyverse package. If you do not already have it installed you will get an error message from running this code.
+
+```{r install-tidy}
+library(tidyverse)
+```
+
+
+## dplyr
+
+The `dplyr` package is a fundamental component of the tidyverse that provides a powerful and efficient toolkit for data manipulation in R. It's designed to simplify the process of transforming and summarizing data, making complex operations easier to express and understand. Here's an overview of the key features and functions of the `dplyr` package:
+
+1. Data Transformation:
+
+* `select()`: This function is used to select columns from a data frame based on their names.
+
+* `filter()`: It's used to filter rows based on specified conditions.
+
+* `mutate()`: This function adds new columns or modifies existing ones, creating a transformed version of the data.
+
+
+2. Data Summarization:
+
+* `group_by()`: This function is used to group data by one or more variables.
+
+* `summarize()`: It's used in combination with group_by() to compute summary statistics for each group.
+
+3. Data Aggregation:
+
+* `arrange()`: This function orders rows based on specified variables, allowing ascending or descending order.
+
+* `count()`: It's used to count the occurrences of unique combinations of variables.
+
+4. Pipelining (`%>%` Operator):
+
+One of the defining features of dplyr is its compatibility with the pipe operator `%>%`. This allows you to chain together multiple operations, improving code readability and making it easier to follow the flow of transformations.
+
+By using the pipe operator, you can write code that reads almost like a sentence, with each step of data manipulation flowing into the next. This makes it easier to follow the progression of transformations and reduces the need for intermediate variables. The end result is more concise, readable, and expressive code.
+
+```{r pipe, eval=FALSE}
+# Without piping
+filtered_data <- filter(data, age > 25)
+summarized_data <- summarize(filtered_data, avg_income = mean(income))
+
+# With piping
+library(dplyr)
+data %>%
+  filter(age > 25) %>%
+  summarize(avg_income = mean(income))
+
+```
+
+As shown in the example, the pipe operator takes the output from one step and passes it as the input to the next step. This creates a natural flow that reflects the logical order of the operations being performed.
+
+
+Here is the [dplyr cheatsheet](https://github.com/rstudio/cheatsheets/blob/main/data-transformation.pdf) to reference for which functions to use when with examples.
+
+## Data Transformation
+### select()
+> When working with select think about selecting COLUMNS
+
+There are different ways to use `select()`
+
+1. Choose specific column name from the data frame
+```
+    # Select columns "age" and "income"
+    selected_data <- select(data, age, income)
+```
+2. Select Columns by Name Patterns:
+You can use special helper functions like `starts_with()`, `ends_with()`, `contains()`, `matches()`, and `everything()` to select columns based on their names.
+```
+    # Select columns that start with "var"
+    selected_vars <- select(data, starts_with("var"))
+    # Select columns that contain "total" in their names
+    total_columns <- select(data, contains("total"))
+```
+3. Exclude Columns:
+To exclude specific columns, you can use the `-` (minus) sign before the column name.
+```
+    # Exclude columns "gender" and "zipcode"
+    filtered_data <- select(data, -gender, -zipcode)
+```
+4. Select Columns by Index and Range:
+Using the : operator, you can select columns within a range of indices based on their index positions.
+```
+    # Select columns 4 to 6
+    range_columns <- select(data, 4:6)
+```
+#### Practice with `CIACountries`
+
+We will load the `library(mdsr)` (might have to install) which comes from *Modern Data Science with R* book and houses the data set `CIACountries`
+
+**CIA Countries Description**: The CIA Factbook has geographic, demographic, and economic data on a country-by-country basis. In the description of the variables, the 4-digit number indicates the code used to specify that variable on the data and documentation website.
+
+
+```{r cia, results='hide'}
+library(mdsr)
+## glimpse function in the tidyverse to explore the dataset
+CIACountries %>% 
+  glimpse()
+
+#Subset of columns
+select(CIACountries, country, pop, gdp)
+
+#I can also do it like this
+CIACountries %>% 
+  select(country, pop, gdp)
+
+```
+
+Explore on your own...
+
+```{r select-ex, eval=FALSE}
+CIACountries %>% 
+  select()
+```
+
+
+
+### filter()
+> When filtering think about filtering ROWS
+
+Filter uses Boolean logic so you must enter conditions that are either `TRUE` of a variable(s) or `FALSE`.
+
+Ways to filer..
+
+1. Simple Conditions - greater than (`>`), less than (`<`), or equal to (`==`)
+```
+    # Select rows where "age" is greater than 30
+    filtered_data <- filter(data, age > 30)
+    
+    # Select rows with "female" in the "gender" column
+    female_data <- filter(data, gender == "female")
+```
+> Must use == when filtering since it is asking about Boolean logic
+> Must be exact matches when characters (spelling/uppercase/lowercase/etc.)
+
+2. Multiple Conditions - You can combine conditions using logical operators like `&` (AND) and `|` (OR).
+```
+    # Select rows where "age" is greater than 30 and "income" is less than 50000
+    filtered_data <- filter(data, age > 30 & income < 50000)
+```
+3. Exclusion - to exclude certain rows, you can use the `!=` operator (not equal to).
+```
+    # Exclude rows with "zipcode" equal to 12345
+    filtered_data <- filter(data, zipcode != 12345)
+```
+4. Filter rows based on vector of conditions - The `%in%` operator is useful for filtering rows with values in a specified vector.
+```
+    # Select rows where "gender" is either "male" or "female"
+    gender_data <- filter(data, gender %in% c("male", "female"))
+```
+#### Practice with CIACountries
+
+```{r filter_cia, results='hide'}
+#Subset of rows
+filter(CIACountries, pop > 1000000000)
+
+#I can also do it like this
+CIACountries %>% 
+  filter(pop > 1e9)
+# using both together
+CIACountries %>% 
+  select(country, pop, gdp) %>% 
+  filter(pop > 1e9)
+```
+
+On your own...
+
+Try using filter and select together. 
+
+```{r filter_ex, eval=FALSE}
+CIACountries %>% 
+  filter()
+```
