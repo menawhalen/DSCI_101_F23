@@ -67,6 +67,74 @@ Set Up Git: Open a terminal (or Git Bash on Windows), note that the terminal is 
 
 This cycle helps everyone stay coordinated when working on the same project.
 
+## File Pathways
+
+Computers are not as smart as you think and you have to tell it exactly what you want it to do and exactly where to look for things.
+
+A file pathway is like a roadmap that guides R to locate your data files on your computer. It's similar to giving directions to someone using street names and landmarks. There are two main types of file pathways:
+
+* Absolute Pathway: This is the complete pathway starting from the root directory of your computer. It's like giving GPS coordinates for a location.
+
+Example: "C:/Users/YourUsername/Documents/data/file.csv"
+
+* Relative Pathway: This is the pathway relative to the current *working directory* in R. It's like giving directions based on your current location.
+
+Example: "data/file.csv"
+
+### Working Directory 
+
+The working directory is the location on your computer where R is currently operating. When you read or write files, R will look for them in this directory by default. This makes it important to set your working directory to the right location, especially when working with data files.
+
+You can use the `getwd()` function to check your current working directory, and the `setwd()` function to set a new working directory.
+
+    # Check the current working directory
+    getwd()
+    
+    # Set a new working directory
+    setwd("path/to/your/new/directory")
+
+### Organizing Data:
+
+It's a good practice to organize your data in a separate folder within your R project. This keeps things tidy and helps avoid confusion.
+
+* Working in Projects: When you are working in a project the working directory is set for you where the project is located on your computer.
+
+* Create a Data Folder: In your R project directory, create a folder named "data" to store your datasets.
+
+* Place Data Files: Put your dataset files (CSV, Excel, etc.) inside the "data" folder.
+
+## readr
+The readr package in the tidyverse provides functions to easily read data files into R. Let's see how to use it to import CSV and Excel files:
+
+Importing CSV Files:
+```
+ # Use read_csv to import a CSV file
+    file_path <- "data/file.csv"  # Specify the relative pathway
+    data <- read_csv(file_path)
+    read_csv("data/file.csv")
+```    
+Importing Excel Files (XLSX):
+
+```    
+    # Use read_xlsx to import an Excel file
+    file_path <- "data/file.xlsx"  # Specify the relative pathway
+    data <- read_xlsx(file_path)
+```
+### Checking Imported Data:
+
+After importing the data, it's a good idea to examine it using functions like `glimpse()`, `slice()`, or `str()`.
+
+```
+    # Display the first few rows
+    slice(data, 1:5)
+    
+    # Get summary of the variables
+    glimpse(data)
+    
+    # Display the structure of the data
+    str(data)
+```
+
 ## Tidyverse
 
 The tidyverse is a collection of R packages designed to facilitate data manipulation, exploration, visualization, and modeling. It's built around the idea of making data analysis in R more intuitive and efficient by providing a consistent and coherent framework. The tidyverse packages work seamlessly together and share a common underlying philosophy known as the "tidy data" principles.
