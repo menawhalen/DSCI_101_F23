@@ -1,0 +1,318 @@
+---
+title: "Wrangle 2"
+date: "2023-09-11"
+output: html_document
+---
+## Data Transformation
+### select()
+> When working with select think about selecting COLUMNS
+
+There are different ways to use `select()`
+
+1. Choose specific column name from the data frame
+```
+    # Select columns "age" and "income"
+    selected_data <- select(data, age, income)
+```
+2. Select Columns by Name Patterns:
+You can use special helper functions like `starts_with()`, `ends_with()`, `contains()`, `matches()`, and `everything()` to select columns based on their names.
+
+```
+    # Select columns that start with "var"
+    selected_vars <- select(data, starts_with("var"))
+    
+    # Select columns that contain "total" in their names
+    total_columns <- select(data, contains("total"))
+```
+3. Exclude Columns:
+To exclude specific columns, you can use the `-` (minus) sign before the column name.
+```
+    # Exclude columns "gender" and "zipcode"
+    filtered_data <- select(data, -gender, -zipcode)
+```
+4. Select Columns by Index and Range:
+Using the : operator, you can select columns within a range of indices based on their index positions.
+```
+    # Select columns 4 to 6
+    range_columns <- select(data, 4:6)
+```
+#### Practice with `CIACountries`
+
+We will load the `library(mdsr)` (might have to install) which comes from *Modern Data Science with R* book and houses the data set `CIACountries`
+
+**CIA Countries Description**: The CIA Factbook has geographic, demographic, and economic data on a country-by-country basis. In the description of the variables, the 4-digit number indicates the code used to specify that variable on the data and documentation website.
+
+
+```{r cia, message=FALSE, results='hide'}
+library(tidyverse)
+library(mdsr)
+## glimpse function in the tidyverse to explore the dataset
+CIACountries %>% 
+  glimpse()
+
+#Subset of columns
+select(CIACountries, country, pop, gdp)
+
+#I can also do it like this
+CIACountries %>% 
+  select(country, pop, gdp)
+
+```
+
+Explore on your own...
+
+```{r select-ex, results='hide'}
+CIACountries %>% 
+  select()
+```
+
+
+
+### filter()
+> When filtering think about filtering ROWS
+
+Filter uses Boolean logic so you must enter conditions that are either `TRUE` of a variable(s) or `FALSE`.
+
+Ways to filter..
+
+1. Simple Conditions - greater than (`>`), less than (`<`), or equal to (`==`)
+```
+    # Select rows where "age" is greater than 30
+    filtered_data <- filter(data, age > 30)
+    
+    # Select rows with "female" in the "gender" column
+    female_data <- filter(data, gender == "female")
+```
+> Must use == when filtering since it is asking about Boolean logic
+> Must be exact matches when characters (spelling/uppercase/lowercase/etc.)
+
+2. Multiple Conditions - You can combine conditions using logical operators like `&` (AND) and `|` (OR).
+
+```
+    # Select rows where "age" is greater than 30 and "income" is less than 50000
+    filtered_data <- filter(data, age > 30 & income < 50000)
+```
+
+3. Exclusion - to exclude certain rows, you can use the `!=` operator (not equal to).
+
+```
+    # Exclude rows with "zipcode" equal to 12345
+    filtered_data <- filter(data, zipcode != 12345)
+```
+4. Filter rows based on vector of conditions - The `%in%` operator is useful for filtering rows with values in a specified vector.
+
+```
+    # Select rows where "gender" is either "male" or "female"
+    gender_data <- filter(data, gender %in% c("male", "female"))
+```
+#### Practice with CIACountries
+
+```{r filter_cia, results='hide'}
+#Subset of rows
+filter(CIACountries, pop > 1000000000)
+
+#I can also do it like this
+CIACountries %>% 
+  filter(pop > 1e9)
+# using both together
+CIACountries %>% 
+  select(country, pop, gdp) %>% 
+  filter(pop > 1e9)
+```
+
+On your own...
+
+Try using filter and select together. 
+
+```{r filter_ex, eval=FALSE}
+CIACountries %>% 
+  filter() %>% 
+  select()
+```
+
+### mutate()
+
+There are multiple ways to use the `mutate()` function when creating a new variable depending on what you want to do with the new variable using variables already existing in the dataset.
+
+```{r mutate1, eval=FALSE}
+# Add a new variable "bmi" calculated from "weight" and "height"
+new_data <- data %>%
+  mutate(bmi = weight / (height * height))
+# Modify the "income" variable by multiplying it with 1.1
+updated_income <- data %>%
+  mutate(income = income * 1.1)
+```
+
+We can use other functions within mutate to help us make the new variable like `ifelse()`. If you have multiple condition you can use the `case_when()` function and list out your possible options.
+
+Basic syntax is
+
+```
+    case_when(
+      condition_1 ~ value_1,
+      condition_2 ~ value_2,
+      ...,
+      TRUE ~ default_value
+    )
+```
+* condition_1, condition_2, etc.: These are logical expressions that define conditions to be evaluated. If a condition is TRUE, the corresponding value will be assigned.
+
+* value_1, value_2, etc.: These are the values to be assigned if the corresponding condition is met.
+
+* TRUE ~ default_value: This is optional. If none of the preceding conditions are met, the default_value will be assigned.
+
+```
+# Create a new variable "status" based on "age"
+new_data <- data %>%
+  mutate(status = ifelse(age > 30, "Older", "Younger"))
+
+# Create a new variable "group" based on "age"
+new_data <- data %>%
+  mutate(group = case_when(
+    age < 30 ~ "Young",
+    age >= 30 & age <= 50 ~ "Middle-aged",
+    age > 50 ~ "Old"
+  ))
+```
+
+
+#### Practice with CIACountries
+
+```{r mutate_cia}
+#Mutate
+#Population Density
+my_CIACountries <- mutate(CIACountries, dens = pop/area)
+my_CIACountries[1,]
+
+my_CIACountries <- CIACountries %>% 
+  mutate(dens = pop/area)
+my_CIACountries[1,]
+```
+
+On your own..
+
+```{r mutate_ex, eval=FALSE}
+CIACountries %>% 
+  mutate()
+```
+
+## Data Summary
+
+Using `group_by()` and `summarize()` together allows you to efficiently compute summary statistics, aggregations, or any other computations of data based on different groups defined by one or more variables.
+
+### group_by()
+
+The group_by() function is used to group a data frame by one or more variables. This creates a "grouped" data frame where subsequent operations are performed within each group separately. This works best with categorical variables or factor variables.
+
+```
+    # Group data by "category"
+    grouped_data <- data %>%
+      group_by(category)
+```
+
+This does not really change the look of the data on its own but returns the dataset with now grouped variables.
+
+### summarise()
+
+The `summarise()` function is used to compute summary statistics or other values for each group. It condenses the grouped data into a single row per group, summarizing the specified variables.
+
+```
+    # Compute mean and median of "value" for each group
+    summary_results <- grouped_data %>%
+      summarise(mean_value = mean(value),
+                median_value = median(value))
+``` 
+
+Combining `group_by()` and `summarise()` allows you to compute summary statistics or perform calculations on subsets of your data based on grouping variables.
+
+```{r groupby_sum}
+# Sample data frame
+data <- data.frame(category = c("A", "B", "A", "B", "A"),
+                   value = c(10, 20, 15, 25, 30))
+
+# Group by "category" and compute mean and median of "value"
+summary_data <- data %>%
+  group_by(category) %>%
+  summarise(mean_value = mean(value),
+            median_value = median(value))
+```
+
+#### Practice with CIACountries
+
+```{r summarize_cia, results='hide'}
+#What is the average area by high vs low education countries?
+my_CIACountries <- CIACountries %>% 
+  mutate(high_educ = educ > 4.5) %>% 
+  group_by(high_educ) %>% 
+  summarise(mn_area = mean(area))
+
+my_CIACountries
+
+```
+
+On your own..
+
+Create a new categorical variable (using `case_when()`) to use `group_by()` and `summarise()`
+
+```{r summarise_ex, eval = FALSE}
+CIACountries %>% 
+  mutate(new_variable = case_when(
+    
+  )) %>% 
+  group_by(new_variable) %>% 
+  summarise()
+```
+
+
+## Data Aggregation 
+### arrange() and count()
+
+The `arrange()` function is used to reorder the rows of a data frame based on one or more variables. Depending on the type of variable (integer, character, etc.) depends on how the variables is arranged.
+
+The default order is from largest to smallest (or alphabetical for strings). To change the order from smallest to largest use `desc()`
+
+Unlike other `dplyr` verbs, `arrange()` largely ignores grouping; you need to explicitly mention grouping variables (or use `.by_group = TRUE`) in order to group by them, and functions of variables are evaluated once per data frame, not once per group.
+
+The `count()` function is used to count the occurrences of unique values in a variable. You can also combine these functions to sort the data by a count of occurrences.
+
+```{r arrange, results='hide'}
+# Sample data frame
+data <- data.frame(category = c("A", "B", "A", "B", "A"),
+                   age = c(25, 30, 35, 40, 45))
+
+# Arrange data by "age" in descending order
+data %>%
+  arrange(desc(age))
+
+# Count the occurrences of each "category"
+data %>%
+  count(category)
+
+# Arrange data by the count of each "category" in ascending order
+data %>%
+  count(category) %>%
+  arrange(n)
+```
+
+### Practice CIA Countries 
+
+```{r arrange_cia}
+#Defaults to ascending
+CIACountries %>% 
+  arrange(gdp) %>% 
+  head(5)
+#Sort descending
+CIACountries %>% 
+  arrange(desc(gdp)) %>% 
+  head(5)
+
+```
+
+## On your own
+
+Explore CIA Countires dataset, ask questions like "What proportion of countries produce any oil stratified by net users class?"
+
+```{r explore_ex, eval=FALSE}
+CIACountries
+```
+
