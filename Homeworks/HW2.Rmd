@@ -1,0 +1,84 @@
+---
+title: "Homework 2"
+author: "Your Name Here"
+date: "2023-09-19"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+1. Using the `cubs_all_time` dataset found in the data folder. Answer the following questions using R:
+
+a) (10 points) How many total games have the Cubs won and lost between 1876 and 2022?
+
+```{r ex1a, message=FALSE}
+library(tidyverse)
+
+```
+
+b) (10 points) What year did the Cubs score the most runs? What year did the Cubs score the fewest runs? Do you have any thoughts about the year that the Cubs scored the fewest runs?
+
+```{r ex1b}
+
+```
+
+c) (10 points) In how many seasons was the Cubs total attendance (i.e. the variable Attendance) over 3 million?
+
+```{r ex1c}
+
+```
+
+d) (10 points) In the years between 1982 and 2000 (inclusive), what was the greatest ratio of runs for (R) to runs against (RA) in a single season?
+
+```{r ex1d}
+
+```
+
+2. Using the Teams data frame in the Lahman package:
+
+```
+#install.packages("Lahman")
+#The data is in this package
+library(Lahman)
+#The data set is called "Teams".
+#Load this package and the data will automatically be loaded.
+## data("Teams") will put it in your environment
+#Use help(Teams) to get a description of the data
+```
+
+a) (10 points) Create a data frame that is a subset of the Teams data frame that contains only the years from 2000 through 2009 and the variables yearID, W, and L.
+
+```{r ex2a}
+
+```
+
+
+b) (10 points) How many years did the Chicago Cubs (teamID is "CHN") hit at least 200 HRs in a season and what was the median number of wins in those seasons.
+
+```{r ex2b}
+
+```
+
+3. Using `flights` dataset from `nycflights13` 
+
+```
+library(nycflights13)
+#The data set is called "flights".
+#Load this package and the data will automatically be loaded.
+# data("flights") will put it in your environment
+#Use help(flights) to get a description of the data
+```
+
+Use the nycflights13 package and the flights data frame to answer the following questions (you can ignore missing values):
+
+a) (20 points) What month had the highest average time of delayed flights? Is there a difference between using departure delay versus arrival delay?
+
+```{r ex3a}
+
+```
+
+b) (20 points) Which airport has the highest proportion of delayed flights leaving? Which airport has the highest proportion of flight arriving late?
+
+```{r ex3b}
+
+```
+
