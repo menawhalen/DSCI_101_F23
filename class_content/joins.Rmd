@@ -1,0 +1,197 @@
+---
+title: "Joins"
+date: "2023-09-18"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Joins
+
+In the tidyverse, joining two datasets together is a way to combine data from different sources based on common variables. The dplyr package within the tidyverse provides functions to perform these joins.
+
+### Inner Join
+
+An inner join combines rows from two datasets where there's a match between the specified variables. Rows with no matching values are excluded. Inner joins return results if the keys are matched in BOTH tables.
+
+    inner_joined_data <- dataset1 %>%
+      inner_join(dataset2, by = "common_column")
+      
+### Practice with Flights Data      
+
+```{r examine_data, message=FALSE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+library(mdsr)
+library(nycflights13)
+
+head(airlines)
+head(flights)
+
+```
+
+
+```{r inner}
+#Tidyverse way
+flights_joined <- flights %>% 
+  inner_join(airlines, by = c("carrier" = "carrier"))
+glimpse(flights_joined)
+ 
+flights_joined %>% 
+  select(carrier, name, flight, origin, dest) %>% 
+  head(3)
+```
+
+
+"In an inner_join(), the result set contains only those rows that have matches in both tables. In this case, all of the rows in flights have exactly one corresponding entry in airlines, so the number of rows in flights_joined is the same as the number of rows in flights (this will not always be the case)."
+
+***It is always a good idea to carefully check that the number of rows returned by a join operation is what you expected. In particular, you should carefully check for rows in one table that matched to more than one row in the other table***
+
+### Left Join
+
+A left join includes all rows from the left dataset and the matching rows from the right dataset. If there's no match, the columns from the right dataset will be filled with NA. Here the rows of the first table are always returned, regardless of whether there is a match in the second table.
+
+    left_joined_data <- dataset1 %>%
+      left_join(dataset2, by = "common_column")
+
+### Practice with Flights Data  
+
+```{r left}
+#Airports in the pacific time zone only 
+airports_pt <- airports %>%
+  filter(tz == -8) %>% 
+  select(faa, name, tz)
+
+nrow(airports_pt)
+head(airports_pt)
+  
+#If we do inner join
+nyc_dests_pt <- flights %>% 
+  inner_join(airports_pt, by = c("dest" = "faa")) %>% 
+  select(name, tz, dest, dep_time,sched_dep_time, arr_time, sched_arr_time, carrier)
+
+head(nyc_dests_pt)
+ 
+#Notice these are different.  
+#key variable needs to be in BOTH data sets to get returned.  
+nrow(flights)
+nrow(nyc_dests_pt)
+ 
+nyc_dests <- flights %>% 
+  left_join(airports_pt, by = c("dest" = "faa"))
+ 
+#Notice these are the same!
+nrow(flights)
+nrow(nyc_dests)
+
+
+nyc_dests %>%
+  summarize(
+    num_flights = n(),
+    num_flights_pt = sum(!is.na(name)),
+    num_flights_not_pt = sum(is.na(name))
+  )
+```
+
+### Full Join 
+
+A full join includes all rows from both datasets. Columns from the dataset with missing values will be filled with NA where there's no match.
+
+    full_joined_data <- dataset1 %>%
+      full_join(dataset2, by = "common_column")
+      
+There is also a right join but this is much less common. A right join is the opposite of a left join. It includes all rows from the right dataset and the matching rows from the left dataset.    
+
+      
+### Practice with Flights Data       
+
+```{r}
+# Right Join: Keeping all airports in the pacific time zone, matching if possible
+nyc_dests_right <- flights %>% 
+  right_join(airports_pt, by = c("dest" = "faa"))
+
+# Full Join: Keeping all destinations and airports, filling with NA where no match
+nyc_dests_full <- flights %>% 
+  full_join(airports_pt, by = c("dest" = "faa"))
+
+# Summary of the results
+summary_inner <- nyc_dests_pt %>%
+  summarize(num_flights = n())
+
+summary_left <- nyc_dests %>%
+  summarize(
+    num_flights = n(),
+    num_flights_pt = sum(!is.na(name)),
+    num_flights_not_pt = sum(is.na(name))
+  )
+
+summary_right <- nyc_dests_right %>%
+  summarize(num_airports = n())
+
+summary_full <- nyc_dests_full %>%
+  summarize(num_rows = n(), 
+            num_airports = sum(!is.na(name)))
+
+# Display the summaries
+summary_inner
+summary_left
+summary_right
+summary_full
+
+```
+
+
+### Join by multiple columns
+
+The `by` argument specifies the column(s) that should be used for matching. These join functions work well when the datasets have a shared column containing the same type of data (e.g., IDs or keys).
+
+You can use multiple column names to define the matching conditions.
+
+    # Syntax
+    inner_join(df1, df2, by=c('x1'='y1', 'x2'='y2'))
+
+Example Code 
+
+```{r example_mult}
+# Create emp Data Frame
+emp_df=data.frame(
+  emp_id=c(1,2,3,4,5,6),
+  name=c("Smith","Rose","Williams","Jones","Brown","Brown"),
+  superior_emp_id=c(-1,1,1,2,2,2),
+  dept_id=c(10,20,10,10,40,50),
+  dept_branch_id= c(101,102,101,101,104,105)
+)
+
+# Create dept Data Frame
+dept_df=data.frame(
+  dept_id=c(10,20,30,40),
+  dept_name=c("Finance","Marketing","Sales","IT"),
+  dept_branch_id= c(101,102,103,104)
+)
+
+emp_df %>% 
+  inner_join(dept_df, 
+        by=c('dept_id'='dept_id', 
+             'dept_branch_id'='dept_branch_id'))
+
+```
+
+
+## On your own..
+
+Answer the following questions either in the exercise below or in an R script
+
+1. Which airlines had the most delayed flights departing from NYC in 2013?
+2. What are the top destinations (airports) for flights departing from NYC in 2013?
+3. Which airlines had the highest average departure delays from each airport?
+4. What is the distribution of flight distances for flights departing from each airport?
+5. Which airlines operated the most flights from each airport in NYC?
+
+
+```{r join_ex, eval=FALSE}
+## Q1
+flights %>% 
+  left_join()
+## Q2
+
+```

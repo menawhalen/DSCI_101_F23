@@ -1,0 +1,89 @@
+---
+title: "Pivots - Tidy Data"
+date: "2023-09-20"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Tidy Data
+Tidy data is a concept popularized by Hadley Wickham, and it refers to a specific way of organizing data tables in a tabular format to facilitate data analysis. In tidy data:
+
+* Each variable forms a column.
+* Each observation forms a row.
+
+## Pivots
+
+Data often comes in various formats, and its structure might not be ideal for the task at hand. Pivoting helps you reorganize your data to a format that makes it easier to analyze, visualize, or model. For example, you might need to pivot data to:
+
+* Perform Aggregations: Pivoting can simplify data aggregation and summary calculations. You can consolidate multiple columns into one and apply functions like mean, sum, etc.
+
+* Create Visualizations: Some visualizations require specific data structures. Pivoting can help organize data to generate meaningful visualizations like time series plots, heatmaps, or faceted graphs.
+
+* Fit Models: Certain modeling techniques might require data in a specific shape. Pivoting can help transform data into a format suitable for predictive modeling or statistical analysis.
+
+### Pivot Longer
+The `pivot_longer()` function is used to convert data from a wide format (with multiple columns) into a long format (fewer columns). It's particularly useful when you have variables spread across different columns and you want to stack them into a single column, often with corresponding values.
+
+    pivot_longer(data, cols, names_to, values_to)
+
+* data: The input data frame.
+* cols: Columns to pivot into longer format.
+* names_to: The name of the column that will store the column names from the original wide format.
+* values_to: The name of the column that will store the values from the original wide format.
+
+### Pivot Wider
+The `pivot_wider()` function is used to convert data from a long format to a wide format. It's useful when you want to take distinct values from a column and spread them across new columns.
+
+    pivot_wider(data, names_from, values_from)
+    
+* data: The input data frame.
+* names_from: The column that contains the unique values to be transformed into column names in the wide format.
+* values_from: The column that contains the values to be spread across the new wide-format columns.
+
+```{r pivoting}
+# Sample data
+data_wide <- data.frame(
+  country = c("USA", "Canada"),
+  `2018` = c(250, 180),
+  `2019` = c(260, 190),
+  `2020` = c(270, 200)
+)
+
+# Using pivot_longer to reshape data
+data_wide %>%
+  pivot_longer(cols = -country, names_to = "year", values_to = "value")
+
+# Sample data
+data_long <- data.frame(
+  country = c("USA", "Canada"),
+  year = rep(c("2018", "2019", "2020"), each = 2),
+  value = c(250, 260, 270, 180, 190, 200)
+)
+# Using pivot_wider to reshape data
+data_long %>%
+  pivot_wider(names_from = year, values_from = value)
+
+```
+
+Since we are working with a lot of datasets from the Tidyverse these datasets are already in the tidy format and thus pivoting is not needed. But once you combine dataset together there can be options to summarise new variables and thus could lead to pivoting.
+
+
+## On your own..
+
+Using airline datasets from Monday, create a dataset where each airline is a row and each column is a month (1-12) to see which is the busiest months for each airline.
+
+
+```{r oyw}
+
+```
+
+Using the package `palmerpenguins`, pivot the dataset to that all the penguin's biological measurement (bill and flipper) are in a tidy format.
+
+```{r penguin}
+
+```
+
