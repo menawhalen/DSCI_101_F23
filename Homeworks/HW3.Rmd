@@ -14,11 +14,11 @@ a) (20 points) Name every player in baseball history who has accumulated at leas
 
 b) (20 points) Similarly, name every pitcher in baseball history who has accumulated at least 300 wins (W) and at least 3,000 strikeouts (SO). 
 
-c) (20 points) Identify the name and year of every player who has hit at least 50 home runs in a single season. Which player had the lowest batting average in that season?
+c) (20 points) Identify the name and year of every player who has hit at least 50 home runs in a single season. Of those player-seasons which player had the lowest batting average (hits/at bats [H/AB])?
 
 
 2. Use the nycflights13 package and the `flights` and `planes` tables to answer the following questions:
 
 a) (20 points) What is the oldest plane (specified by the tailnum variable) that flew from New York City airports in 2013?
 
-b) (20 points) How many airplanes that flew from New York City are included in the planes table?
+b) (20 points) How many airplanes are in the `flights` dataset? How many of those airplanes are included in the planes table? Is there a difference?
