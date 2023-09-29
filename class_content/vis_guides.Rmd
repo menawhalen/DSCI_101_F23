@@ -1,0 +1,94 @@
+---
+title: "Data Vis Guides/Themes"
+author: "Your Name Here"
+date: "2023-10-2"
+output: html_document
+---
+
+## Guides and Themes in ggplot2
+
+### Guides
+In ggplot2, guides are visual elements that help interpret the scales used in a plot. Guides include legends, color scales, size scales, and more. They provide critical information about the mapping between data and aesthetics in a plot. Two common functions for customizing guides are `scale_fill_manual` and `scale_color_manual.`
+
+#### `scale_fill_manual` and `scale_color_manual`
+`scale_fill_manual` and `scale_color_manual` are functions used to manually specify colors for fill and color aesthetics, respectively.
+They allow you to provide a set of color values to map discrete data values to specific colors.
+Useful when you want to customize the colors used in your plot to match your data or create a particular visual effect.
+
+Example (using scale_fill_manual): Notice we wrapped variables in a `factor()`
+
+```{r scale_fill, message=FALSE}
+library(tidyverse)
+library(mdsr)
+ggplot(data = mtcars, aes(x = factor(cyl))) +
+  geom_bar(fill = "dodgerblue") 
+
+ggplot(data = mtcars, aes(x = factor(cyl), 
+                          fill = factor(gear)))+
+  geom_bar()
+
+ggplot(data = mtcars, aes(x = factor(cyl), 
+                          fill = factor(gear)))+
+  geom_bar()+
+  scale_fill_manual(values = c("red", "green", "blue"))
+```
+
+### Themes
+Themes in ggplot2 allow you to control the overall appearance of your plot, such as fonts, colors, and gridlines. You can customize the theme of your plot using the theme function.
+
+ggplot2 provides several built-in themes that you can use to change the overall appearance of your plots. These themes offer different combinations of fonts, colors, and gridlines to suit various visualization needs. Here are a few basic themes that come with ggplot2:
+
+1. theme_gray():
+* This is the default theme in ggplot2.
+* It uses a simple gray background with white gridlines.
+* A good choice when you want a clean, minimalist look for your plot.
+
+2. theme_bw():
+* This theme provides a white background with black gridlines.
+* It offers a high-contrast, black-and-white appearance.
+* Useful for creating plots that need to be easily readable in black and white.
+
+3. theme_minimal():
+* As the name suggests, this theme is minimalistic.
+* It removes gridlines and most background elements, leaving a clean, white canvas.
+* Suitable for plots where you want to focus on the data without distractions.
+
+4. theme_void():
+* This theme removes nearly all elements, providing a blank canvas.
+* It's useful when you want to start with a clean slate and add custom elements.
+
+
+### Using External Color Packages
+Sometimes, you may want to use specialized color palettes from external packages to enhance your data visualizations. Packages like `wesanderson` and `viridis` provide aesthetically pleasing color palettes that can make your plots more visually appealing.
+
+Example (using the viridis package):
+
+```{r viridis}
+library(viridis)
+library(palmerpenguins)
+
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point()
+
+
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  scale_color_viridis(discrete = TRUE) 
+```
+
+### Customizing Labels with labs()
+The `labs()` function in ggplot2 allows you to customize plot labels, including titles, subtitles, captions, and axis labels. You can use `labs()` to change the text displayed in various parts of your plot.
+
+Example (customizing plot labels):
+
+```{r labs}
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  labs(
+    title = "Scatter Plot of Bill Length vs. Bill Depth",
+    x = "Length of Bill (mm)",
+    y = "Depth of Bill (mm)",
+    subtitle = "Data from the PalmerPenguins dataset",
+    caption = "Source: Penguin Data"
+  )
+```
