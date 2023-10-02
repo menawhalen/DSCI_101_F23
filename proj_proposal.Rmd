@@ -1,0 +1,44 @@
+---
+title: "Project Example Data Proposal"
+author: "Mena Whalen"
+output: html_document
+---
+
+# Example Project DragRaceR
+
+## Project Proposal
+
+I want to use the datasets inside the R package DragRaceR specifically the datasets `rpdr_ep` about the episodes and `rpdr_contestants`. These are about the episodes and contestants on the show Rupaul's Drag Race.
+
+### Questions of Interest
+1. Where are contestants mostly from? How old are they on the show? Has either of this changed over time, especially since it has become more popular over time.
+
+2. How do people perform throughout the competition? Generally how many times do you have to be in the bottom to get elimated versus how many times do you have to be in the top to win?
+
+3. Who generally is a winner of the show? What about them could help them win? Modeling "winning" verus not losing.
+
+4. Anything with the All Star season since seeing these people again?
+
+### Potential Compilcations
+
+The categories of top/bottom is very broad and I will have to recategorize winning/losing and what is more important after winning the challenge or being eliminated. If you didn't win are you in the bottom? Does it depend on the size of the competition? Could someone just be "safe" or are they in the bottom.
+
+I could also have a project joining together the dataset but should be able to based on name only.
+
+## Data
+There are 184 rows for all the contestants on the show and 191 episodes of the show. These can be added to understanding the link between them using `rpdr_contep` as well which has 2320 rows.
+
+```{r}
+library(tidyverse, quietly = TRUE)
+library(dragracer)
+
+rpdr_contep %>% 
+  glimpse()
+
+rpdr_contestants %>% 
+  glimpse()
+
+rpdr_ep %>% 
+  glimpse()
+```
+
