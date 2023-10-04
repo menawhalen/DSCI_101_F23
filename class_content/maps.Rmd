@@ -1,0 +1,269 @@
+---
+title: "Maps"
+author: "Your Name Here"
+date: "2023-10-04"
+output: html_document
+---
+
+## Loops and Conditional Statements
+
+
+### For Loops
+A for loop is a fundamental programming construct that allows you to repeat a block of code a specified number of times. It's especially useful when you need to perform the same operation multiple times or iterate over a sequence of elements, such as elements in a list, vector, or data frame.
+
+The basic structure of a for loop looks like this:
+
+      for (variable in sequence) {
+        # code to be executed in each iteration
+      }
+Here's a breakdown of the components:
+
+* variable: This is a variable that takes on each value in the sequence during each iteration of the loop.
+* sequence: This defines the range or collection of values that the loop will iterate over. It could be a sequence of numbers (1:10), a vector, a list, or any other iterable data structure.
+
+The code block within the curly braces {} contains the operations you want to perform in each iteration of the loop.
+
+Examples of for loops
+
+```{r loops}
+# Consecutive indexes
+for (i in 1:10){
+  print(i)
+}
+
+for (i in 10:1){
+  print(i)
+}
+
+# Don't need to be consecutive!
+for (i in c(2, 3, 5, 7, 11)){
+  print(i)
+}
+
+## Doesn't have to be a number can be a vector of strings
+for (i in c("mike", "mary", "tom", "sue")){
+  print(i)
+}
+
+```
+
+
+### Conditional Statements
+
+Conditional statements are an essential part of programming that allow you to control the flow of your code based on certain conditions. In R, there are primarily three ways to implement conditional statements: `if`, `if else`, and the `ifelse()` function.
+
+#### If Statements
+
+The if statement allows you to execute a block of code only if a given condition is true. 
+
+```{r if}
+sky <- "sunny"
+if (sky == "sunny"){
+  print("Leave your umbrella at home!")
+}
+
+sky <- "cloudy"
+if (sky == "sunny"){
+  print("Leave your umbrella at home!")
+}
+
+```
+
+
+#### If-Else Statements
+
+The if else statement extends the if statement to execute different blocks of code based on whether a condition is true or false. 
+
+```{r if_else}
+number <- -3
+
+if (number > 0) {
+  print("The number is positive.")
+} else if (number < 0) {
+  print("The number is negative.")
+} else {
+  print("The number is zero.")
+}
+```
+
+
+#### Ifelse Function
+
+This is for when you want to use if else statements repeatedly to return a vector.
+
+```{r ifelse}
+numbers <- c(-2, 3, 0, -5, 7)
+positive_indicator <- ifelse(numbers > 0, "Positive", "Not Positive")
+print(positive_indicator)
+
+```
+
+
+
+## Functions
+
+### Why Build Functions?
+
+Functions are the building blocks of code. Just as we break down tasks into smaller steps in everyday life, functions break down complex coding tasks into manageable units. But why should we bother with building your own functions when so many others exist?
+
+* Modularity: Functions help us organize code by grouping related actions together. This makes our code more structured, easier to read, and simpler to maintain.
+
+* Reusability: Once you've built a function to perform a specific task, you can use it as many times as you need without rewriting the same code. This not only saves time but also reduces the chances of errors.
+
+* Efficiency: Functions promote efficient code development by enabling us to focus on solving specific problems without getting bogged down in larger program logic.
+
+* Debugging: When an error occurs, functions help narrow down the problematic part of the code, making it easier to identify and fix issues.
+
+### Function Syntax
+
+At its core, a function is a self-contained block of code designed to perform a specific task. Like a recipe, a function takes in ingredients (inputs or arguments) and produces a result (output). Let's break down the basic structure of a function in R:
+
+    # Defining a Function
+    function_name <- function(argument1, argument2, ...) {
+      # Code to perform the task
+      return(result)
+    }
+
+* function_name: Choose a meaningful name for your function, describing what it does.
+* argument1, argument2, ...: These are placeholders for the values (arguments) that the function will work with.
+* return(result): After performing the task, the function uses the return statement to provide the result.
+
+```{r basic_func}
+
+## find the max between two numbers
+## takes in two number inputs
+find_max <- function(a, b) {
+  if (a > b) {
+    return(a)
+  } else {
+    return(b)
+  }
+}
+
+find_max(1,2)
+find_max(5,3)
+
+## checks even or odd
+## take in one number as the input
+check_even_odd <- function(num) {
+  if (num %% 2 == 0) {
+    return("Even")
+  } else {
+    return("Odd")
+  }
+}
+
+check_even_odd(71)
+check_even_odd(51)
+```
+
+
+## Map 
+
+The `map` function is a powerful tool in the tidyverse package that allows you to *apply a function to each element of a list or vector*, and then returns a list containing the results. It's particularly useful when you have repetitive tasks to perform on multiple elements. This function is part of the `purrr` package within the tidyverse.
+
+Here is an example of map working where we define a function that squares each item in a vector.
+
+```{r map_sq, message=FALSE}
+library(tidyverse)
+# Create a list of values
+values <- c(2, 4, 6, 8)
+
+# Define a function to be applied
+square <- function(x) {
+  return(x^2)
+}
+
+# Use map to apply the function to each element
+result <- map(values, square)
+
+# The result is a list with squared values
+result
+## To get results back to a vector unlist()
+unlist(result)
+```
+
+
+The map function is especially handy when you have complex tasks, such as reading multiple files, performing calculations on multiple datasets, or creating multiple plots. It helps you avoid writing repetitive code and enhances the readability of your code.
+
+For instance, suppose you have a list of file names and you want to read each file and perform some operations on its content:
+
+
+      files <- c("file1.csv", "file2.csv", "file3.csv")
+      
+      # Define a function to read and process a file
+      process_file <- function(filename) {
+        data <- read_csv(filename)
+        # Perform operations on 'data'
+        return(processed_data)
+      }
+      
+      # Use map to process each file
+      processed_files <- map(files, process_file)
+
+### Practice with the `penguins` dataset
+
+`nest` is used to group data into a nested structure. When combined with map, you can apply a function to each nested group separately and return the results as a new column.
+
+
+```{r pen_map}
+library(palmerpenguins)
+data("penguins")
+
+penguins %>% 
+  group_by(sex) %>% 
+  summarise(mean_length = mean(bill_length_mm, na.rm = TRUE))
+
+ penguins %>% 
+  group_by(species) %>% 
+  nest() %>% 
+  mutate(mean_body_mass = map(data, ~ mean(.x$body_mass_g, na.rm = TRUE)),
+         mean_bill_length = map(data, ~ mean(.x$bill_length_mm, na.rm = TRUE)),
+         mean_bill_depth = map(data, ~ mean(.x$bill_depth_mm, na.rm = TRUE)))
+ 
+```
+ 
+`map` returns a list where each element contains the output of applying the specified function to the corresponding element of the input data. It's useful when you expect the output to have different types or structures.
+
+`map_dbl` specifically returns a numeric vector. It's useful when you expect the output to be a numeric value, and it simplifies the output into a vector.
+
+```{r map_pen_dbl}
+ ## use map_dbl for number outputs
+  penguins %>% 
+  group_by(species) %>% 
+  nest() %>% 
+  mutate(mean_body_mass = map_dbl(data, ~ mean(.x$body_mass_g, na.rm = TRUE)),
+         mean_bill_length = map_dbl(data, ~ mean(.x$bill_length_mm, na.rm = TRUE)),
+         mean_bill_depth = map_dbl(data, ~ mean(.x$bill_depth_mm, na.rm = TRUE)))
+
+```
+
+
+Now use a function we make with nesting and mapping together.
+
+```{r nest_map_funct}
+# Define a function to calculate mean and median flipper length
+## puts in a whole dataset (helpful for nest)
+
+calculate_stats <- function(data) {
+  mean_length <- mean(data$flipper_length_mm, na.rm = TRUE)
+  median_length <- median(data$flipper_length_mm, na.rm = TRUE)
+  
+  return(data.frame(mean_length, median_length))
+}
+
+# Group data by species and island
+## then use calculate_stats
+peng_stats <- penguins %>% 
+  group_by(species, island) %>% 
+  nest() %>% 
+  mutate(stats = map(data, calculate_stats)) 
+
+peng_stats
+## cant really see it
+## need to select and unnest the dataframe
+peng_stats %>% 
+  select(stats) %>%
+  unnest()
+```
+
