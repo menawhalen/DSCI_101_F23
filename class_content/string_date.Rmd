@@ -1,0 +1,311 @@
+---
+title: "Strings and Dates"
+author: "Your Name Here"
+date: "2023-10-23"
+output: html_document
+---
+
+# Strings and Dates
+
+## Introduction to stringr
+stringr is a powerful R package in the tidyverse for working with strings. It provides a set of functions that make it easier to manipulate, analyze, and extract information from character strings. In this tutorial, you'll learn how to use stringr for common string operations .Please see the [cheatsheet](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf) for more details.
+
+### Installing and Loading the stringr Package
+Before you can use stringr, you need to install and load the package. Open R or RStudio and run the following commands:
+
+```{r string}
+# Install stringr (only need to do this once)
+#install.packages("stringr")
+
+# Load stringr
+library(stringr)
+
+# Also in tidyverse
+library(tidyverse)
+```
+
+### Basic String Operations
+Let's start with some basic string operations.
+
+1. str_length(): Finding the Length of a String
+You can use str_length() to find the length (the number of characters) in a string:
+
+```{r length}
+# Example
+my_string <- "Hello, World!"
+str_length(my_string)  # Output: 13
+```
+
+2. str_to_lower() and str_to_upper(): Changing Case
+You can use str_to_lower() and str_to_upper() to change the case of a string:
+
+```{r cap}
+str_to_lower(my_string)  # Output: "hello, world!"
+str_to_upper(my_string)  # Output: "HELLO, WORLD!"
+```
+
+### Pattern Matching
+stringr provides functions to perform pattern matching and extraction.
+
+3. str_detect(): Detecting Patterns
+Use str_detect() to check if a string contains a specific pattern:
+
+```{r detect}
+# Example
+my_string <- "The quick brown fox jumps over the lazy dog."
+str_detect(my_string, "fox")  # Output: TRUE
+``` 
+
+4. str_replace(): Replacing Patterns
+You can use str_replace() to replace a pattern with another string:
+
+```{r replace}
+# Example
+my_string <- "The quick brown fox jumps over the lazy dog."
+str_replace(my_string, "fox", "cat")  # Output: "The quick brown cat jumps over the lazy dog."
+``` 
+
+5. str_extract(): Extracting Patterns
+str_extract() extracts the first occurrence of a pattern from a string:
+
+```{r extract}
+# Example
+my_string <- "Email me at john@example.com or call at 555-123-4567."
+str_extract(my_string, "\\d{3}-\\d{3}-\\d{4}")  # Output: "555-123-4567"
+```
+
+6. str_split(): Splitting Strings
+str_split() splits a string into a character vector using a specified delimiter:
+
+```{r split}
+# Example
+my_string <- "apple,banana,cherry"
+str_split(my_string, ",")  # Output: a character vector ["apple", "banana", "cherry"]
+``` 
+
+String Cleaning
+7. str_trim(): Trimming Whitespace
+Use str_trim() to remove leading and trailing whitespace from a string:
+
+```{r trim}
+# Example
+my_string <- "  Trim me!   "
+str_trim(my_string)  # Output: "Trim me!"
+```
+
+8. str_squish(): Removing Extra Whitespace
+str_squish() removes extra whitespace within a string:
+
+```{r squish}
+# Example
+my_string <- "Hello   world    from    R!"
+str_squish(my_string)  # Output: "Hello world from R!"
+``` 
+
+String Manipulation
+9. str_c(): Combining Strings
+You can use str_c() to concatenate strings together:
+
+```{r conc}
+# Example
+first_name <- "John"
+last_name <- "Doe"
+full_name <- str_c(first_name, " ", last_name)
+``` 
+
+10. str_sub(): Substring Extraction
+str_sub() extracts substrings from a string:
+
+```{r sub}
+# Example
+my_string <- "Extract this part"
+str_sub(my_string, start = 9, end = 13)  # Output: "this"
+``` 
+
+### Summary
+stringr is a versatile package for working with strings in R. It provides functions for string manipulation, pattern matching, and cleaning. These functions make it easier to perform various text-related tasks when working with data.
+
+To get more familiar with string manipulation in R, try out these functions with different strings and patterns. The more you practice, the more proficient you'll become in handling strings in R.
+
+## On Your Own..
+
+Using the `sentences` dataset (which is a vector may have to change to a data.frame), practice the following questions.
+
+1. Calculate and report the average character length of sentences in the "sentences" dataset. Which sentence is the shortest, and which is the longest?
+
+2. Find all the sentences in the "sentences" dataset that use a comma. How many such sentences are there?
+
+
+3. Count how many occurrence of the letter "t" is in each sentence. Which sentence has the most? How many have 0?
+
+
+4. In the "sentences" dataset, extract and list all the sentences that contain the word "and" How many sentences contain this word?
+
+5. Replace all occurrences of the word "good" with "excellent" in the "sentences" dataset. How many replacements were made, and what does the dataset look like after these replacements?
+
+##Introduction to lubridate
+lubridate is a popular R package that makes it easy to work with date-times. It provides a wide range of functions and methods to parse, manipulate, and format date-time objects. This tutorial will cover some of the fundamental aspects of using lubridate for working with date and time data in R. Please see the [cheatsheet](https://rawgit.com/rstudio/cheatsheets/main/lubridate.pdf) for more details.
+
+### Installing and Loading lubridate
+To use the lubridate package, you need to install it first. Open R or RStudio and run the following commands:
+
+```{r lubridate}
+# Install lubridate (only need to do this once)
+#install.packages("lubridate")
+
+# Load lubridate
+library(lubridate)
+```
+
+Now, you're ready to start working with date-time objects.
+
+### Creating Date-Time Objects
+You can create date-time objects in various ways:
+
+1. Using ymd() for Date
+The ymd() function is used to create a date object from year, month, and day components.
+
+```{r lab}
+my_date <- ymd("2023-09-15")
+```
+
+2. Using mdy() for Date
+If you have a date in the month-day-year format, you can use the mdy() function.
+
+```{r lab2}
+my_date <- mdy("09-15-2023")
+```
+
+3. Using ymd_hms() for Date-Time
+To create a date-time object with hours, minutes, and seconds, use the ymd_hms() function.
+
+```{r lab3}
+my_datetime <- ymd_hms("2023-09-15 14:30:45")
+```
+
+### Extracting Components
+You can extract various components of date-time objects:
+
+4. Extracting Year, Month, Day, etc.
+```{r extract-date}
+year(my_date)  # Extract year
+month(my_date)  # Extract month
+day(my_date)  # Extract day
+wday(my_date)  # Extract day of the week (Sunday: 1, Monday: 2, etc.)
+```
+
+### Arithmetic with Date-Times
+You can perform arithmetic operations with date-time objects:
+
+5. Adding Days
+```{r adding}
+new_date <- my_date + days(7)  # Add 7 days to my_date
+```
+
+6. Finding Time Difference
+```{r diff}
+diff <- my_date - my_datetime  # Find the time difference between my_date and my_datetime
+
+
+## can use difftime() too
+time1 <- ymd_hms("2023-09-15 08:30:00")
+time2 <- ymd_hms("2023-09-15 12:45:30")
+
+# Calculate the time difference in seconds
+time_diff_seconds <- as.numeric(difftime(time2, time1, units = "secs"))
+
+# Calculate the time difference in hours
+time_diff_hours <- as.numeric(difftime(time2, time1, units = "hours"))
+```
+
+7. Finding Intervals
+lubridate provides functions to find intervals between two date-time objects. For example, you can use interval() to create a time interval between two date-times:
+
+```{r int}
+start_time <- ymd_hms("2023-09-15 08:30:00")
+end_time <- ymd_hms("2023-09-15 12:45:30")
+
+# Create an interval
+time_interval <- interval(start_time, end_time)
+
+```
+
+
+### Formatting Dates
+You can format date-time objects for display:
+
+8. Using format()
+```{r format-labs}
+formatted_date <- format(my_date, format = "%A, %B %d, %Y")
+```
+
+### Parsing Dates
+You can parse character strings into date-time objects:
+
+9. Using parse_date_time()
+```{r parse}
+date_string <- "Sep 15, 2023 14:30:45"
+parsed_datetime <- parse_date_time(date_string, orders = "mdy HMS")
+```
+
+### Summary
+lubridate is a powerful package in R for handling date-time data. It simplifies the creation, extraction, arithmetic, formatting, and parsing of date-time objects. This tutorial covered some of the basic operations you can perform with lubridate. As you explore date-time data, you'll find that lubridate is a valuable tool for your R programming tasks.
+
+### On your Own..
+ Using the `flights` dataset answer the following questions.
+ 
+ 1. Create a new column in the "flights" dataset that displays the departure time in the "hh:mm:ss" format (e.g., "08:45:00")
+ 
+ 2.Extract the year, month, and day from the "dep_time" column in the "flights" dataset and create separate columns for each.
+ 
+ 3. Calculate the average departure delay for flights that occurred on Fridays. How does this compare to the average departure delay on Mondays?
+ 
+
+
+## Inside the Tidyverse
+
+Using these packages along with Tidyverse functions flow together inside the pipe.
+
+Pulling out the first word using `\\w+` and more can be found [here](https://stringr.tidyverse.org/articles/regular-expressions.html). 
+
+```{r string-pipe}
+# Sample dataset
+data <- tibble(name = c("John Doe", "Jane Smith", "Bob Johnson"),
+               score = c(85, 92, 78))
+
+# Let's say we want to extract first names from the 'name' column
+data <- data %>%
+  mutate(first_name = str_extract(name, "\\w+"))
+
+# Now, filter the data for scores greater than 80
+high_scorers <- data %>%
+  filter(score > 80)
+
+# Print the result
+print(high_scorers)
+```
+
+Similar ideas can be applied to dates like using `floor_date()`
+
+```{r}
+# Sample dataset with dates and values
+data <- tibble(date = c("2023-05-01", "2023-05-20", "2023-05-31"),
+               value = c(45, 62, 73))
+
+# Convert the 'date' column to a Date class
+data <- data %>%
+  mutate(date = ymd(date))
+
+# Floor the dates to the beginning of the month
+data <- data %>%
+  mutate(week = floor_date(date, unit = "week"))
+
+# Filter the data for dates in May 2023
+may_data <- data %>%
+  filter(week == ymd("2023-05-28"))
+
+# Print the result
+print(may_data)
+```
+
+
