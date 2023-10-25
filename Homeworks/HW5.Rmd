@@ -1,0 +1,41 @@
+---
+title: "Homework 5"
+author: "Your Name Here"
+date: "2023-11-01"
+output: html_document
+---
+
+1. (30pts) Write ONE paragraph discussing the issues arising from any of these scenarios (pick one option):
+
+(a) In 2006, AOL released a database of search terms that users had used in the prior month (see [https://www.nytimes.com/2006/08/09/technology/09aol.html](https://www.nytimes.com/2006/08/09/technology/09aol.html)). Research this disclosure and the reaction that ensued. What ethical issues are involved? What potential impact has this disclosure had?
+
+(b) A Slate article [https://slate.com/technology/2016/02/how-to-bring-better-ethics-to-data-science.html](https://slate.com/technology/2016/02/how-to-bring-better-ethics-to-data-science.html) discussed whether race/ethnicity should be included in a predictive model for how long
+a homeless family would stay in homeless services. Discuss the ethical considerations involved in whether race/ethnicity should be included
+as a predictor in the model.
+
+(c) A company uses a machine-learning algorithm to determine which job advertisement to display for users searching for technology jobs.
+Based on past results, the algorithm tends to display lower-paying jobs for women than for men (after controlling for other characteris-
+tics than gender). What ethical considerations might be considered when reviewing this algorithm?
+
+2. (30pts) stringr Problems
+
+(a) In the palmerpenguins dataset, create a new column that combines the species and island names into a single string with a hyphen (-) in between. For example, if the species is "Adelie" and the island is "Torgersen," the new column should contain "Adelie-Torgersen."
+
+(b) Find and count the penguins whose species names start with the letter "G" in the palmerpenguins dataset.
+
+(c) Using the flights dataset, create a new column that combines the year and month columns into a Date class column. For instance, if the year is 2019 and the month is 3, the new column should contain "2019-03-01."
+
+(d) From the flights dataset and planes dataset, combine them and then filter the rows where the plane is from 2000-2010 and the flight month is either March (3), May (5), or September (9).
+
+(e) In the palmerpenguins dataset, create a new column that includes the penguin's name (penguinid) and the year they were recorded. For instance, if a penguin's name is "Nelson" and the year is 2007, the new column should contain "Nelson-2007." Then, use this new column to filter and count penguins whose names contain "Adelie" and were recorded in the year 2007.
+
+3. (40pts) map Problems
+
+(a) (15pts) Using the dataset `airquality` in base R, find how many missing values are in each column function `map` (ONLY using `map`).
+
+(b) (25pts) Using the following code to create two dataframes `dat1` and `dat2`. Then find the *sum* of the differences columnwise between the two datasets using `map2()`. This will give you a list output, print that out and then find the sum of those values. This will be the overall difference
+
+      dat1 <- data.frame(matrix(rnorm(2000, 3, 1), ncol = 10))
+      dat2 <- data.frame(matrix(rnorm(2000, 3, 1), ncol = 10))
+      
+
