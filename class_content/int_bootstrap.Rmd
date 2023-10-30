@@ -1,0 +1,332 @@
+---
+title: "Interaction/Simulation/Bootstrap"
+author: "Your Name Here"
+date: "2023-10-30"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Vectorized Operations
+This section covers the concept of vectorization in R. Vectorization is a powerful feature of R that allows you to operate on entire vectors or data frames in a single step, without using explicit loops. This will mainly be review and definitional practice.
+
+Let's say you want to find the average of multiple columns. We could use for loops.
+
+```{r}
+library(Lahman)
+averages <- NULL
+for (i in 15:40) {
+  averages[i - 14] <- mean(Teams[, i], na.rm = TRUE)
+}
+names(averages) <- names(Teams)[15:40]
+averages
+```
+
+Here, we calculate the averages of specific columns (columns 15 to 40) in the Teams dataset. However, we use a for loop, which is not the most efficient approach in R.
+
+### It's all a vector
+
+    “It is important to understand that the fundamental architecture of R is based on vectors. That is, in contrast to general-purpose programming languages like C++ or Python that distinguish between single items—like strings and integers—and arrays of those items, in R a “string” is just a character vector of length 1. There is no special kind of atomic object. Thus, if you assign a single “string” to an object, R still stores it as a vector.” - Baumer Book
+    
+This discusses the idea that in R, everything is treated as a vector. Even a single string, like "a string," is stored as a vector of length 1. The class(), is.vector(), and length() functions are used to demonstrate this concept.
+
+```{r}
+a <- "a string"
+class(a)
+is.vector(a)
+length(a)
+```
+
+Not all functions are able to be vectorized, or can be evaluated on a whole array of values at once.
+
+Example: A function `f()` is defined, which squares a number if it's even and cubes it if it's odd. However, when you try to apply it to a vector, it doesn't work as expected.
+
+```{r}
+
+f <- function(x){
+  if (x %% 2 == 0){
+    x^2
+  } else {
+    x^3
+  }
+}
+  
+#f(1:3)
+
+for (i in 1:3){
+  print(f(i))
+}
+
+```
+
+But we can make the function vectorized. The solution is to make your function vectorized using `Vectorize()`. This allows you to apply the function to a vector as if it were a single value, and it processes each element of the vector accordingly.
+
+```{r}
+f <- Vectorize(f)
+f(1:3)
+```
+
+### Emphasis on Effeciency
+
+Let's look at the time it takes to run a function on "larger" vectors.
+
+```{r, message=FALSE, warning=FALSE}
+library(bench)
+library(tidyverse)
+x <- 1:1e5
+bench::mark(
+  exp(x),
+  map_dbl(x, exp) 
+)
+```
+
+
+## Map Functions
+This section reviews mapping functions in R, which allow you to apply a function to each element of a list or atomic vector.
+
+### Old School Apply
+
+```{r}
+Teams_sub <- Teams[,unlist(lapply(Teams, is.numeric))]
+round(apply(Teams_sub, 2, mean, na.rm = TRUE), 2)
+```
+
+Here, we see how you can simplify applying functions to numeric columns using the `summarize()` function from the tidyverse. It calculates the mean for all numeric columns, ignoring missing values. Check out the new `across()` function.
+
+```{r}
+Teams %>%
+  summarize(across(where(is.numeric),
+                   mean, na.rm = TRUE))
+```
+
+
+### Map Specifics
+
+This code uses `map_chr()` to apply the mean function to numeric columns, specifically columns 15 to 40. It ensures that missing values are removed `(na.rm = TRUE)`.
+
+```{r}
+Teams %>% 
+  select(15:40) %>%
+  map_chr(mean, na.rm = TRUE) 
+
+```
+
+
+* `na.rm` is an option in the mean function! 
+* `map_dbl()` forces the output to be a vector of type double.
+
+## Iterating Over a Single Vector
+
+This section demonstrates how to iterate over a single vector using mapping functions.
+
+Example: Using the Teams dataset pull out the teams associated with the now Angels franchise ("ANA") and find the first and last year they played.
+
+```{r}
+library(Lahman)
+
+angels <- Teams %>% 
+  filter(franchID == "ANA") %>% 
+  group_by(teamID, name) %>%
+  summarize(began = first(yearID), ended = last(yearID)) %>% 
+  arrange(began)
+angels
+
+```
+
+If we wanted to find out the number of characters in the team name..
+
+```{r}
+## old school
+sapply(angels$name, nchar)
+
+# Note I use pull and not select. 
+# Pull is similar to $
+angels %>% pull(name) %>% map_int(str_length)
+```
+
+In `map_*`, the * tells you what type of vector to return. If we don't use it specialized we will get a list returned..
+
+```{r}
+# map will return a list
+angels %>% pull(name) %>% map(nchar)
+```
+
+    "It’s often helpful to use map() to figure out what the return type will be, and then switch to the appropriate type-specific map() variant." - Baumer Book
+    
+## Iterating Over Our Own Function
+
+Below the `top5` function is defined, which takes a team name and a dataset, filters the dataset for that team, selects specific columns, sorts by wins (W), and returns the top 5 records. 
+
+This function is applied to the "New York Yankees" using different approaches.
+
+```{r}
+top5 <- function(team_name, data) {
+  data %>%
+    filter(name == team_name) %>%
+    select(teamID, yearID, W, L, name) %>%
+    arrange(desc(W)) %>%
+    head(n = 5)
+}
+
+top5(data = Teams, team_name = "New York Yankees")
+top5("New York Yankees", Teams)
+
+```
+
+Pulling out the names of all the angel teams to use the map with the `top5` function.
+
+```{r}
+
+angels_names <- angels %>%
+  pull(name)
+
+angels_names
+
+## still comes out as a list
+angels_names %>%
+  map(top5, Teams)
+```
+
+
+This code calculates the average number of wins for the top 5 seasons of each team in the "angels_names" vector. The result is combined into a single data frame using `map_dfr()`. Then, it groups the data by teamID and name, computes the count (N) and mean wins for each team, and arranges them by mean wins.
+```{r}
+# Average number of wins for top 5 seasons
+angels_names %>% 
+  map_dfr(top5, data = Teams) %>%
+  group_by(teamID, name) %>%
+  summarize(N = n(), mean_wins = mean(W)) %>%
+  arrange(desc(mean_wins))
+
+```
+
+
+*** On your Own..
+Using the baby names data set, find the top 100 female baby names in 1950. Then for each name in this set, find the largest single year percentage drop for each of these names across any year from 1900 to present. Which name has the largest single year percentage drop?
+
+## Iteration of Subgroups
+
+
+`hr_leader` is a custom function defined to find the HR (home run) leader in a specific subset of the Teams dataset. This subset is defined by a single year and league, represented by the input x.
+The function does the following:
+
+1. Selects only the columns 'teamID' and 'HR' from the given subset.
+
+2. Arranges the data in descending order based on 'HR'.
+
+3. Retrieves the top entry using `head(1)` (the player/team with the highest number of home runs).
+
+```{r}
+hr_leader <- function(x) {
+  x %>% 
+    select(teamID, HR) %>% 
+    arrange(desc(HR)) %>% 
+    head(1)
+}
+
+## try the year 1961 in the AL league
+
+Teams %>% 
+  filter(yearID == 1961 & lgID == "AL") %>% 
+  hr_leader()
+
+```
+
+### Grouping and Applying Custom Function to Subgroups
+
+In this section, the code uses the `group_by` and `group_modify` functions to iterate over subgroups of the Teams dataset. It's done for each combination of `yearID` and `lgID (league ID).
+
+* `.keep = TRUE` is used to indicate that the grouping variables (yearID and lgID) should be kept in the output.
+
+```{r}
+hr_leaders <- Teams %>% 
+  group_by(yearID, lgID) %>% 
+  group_modify(~hr_leader(.x), .keep = TRUE)
+
+tail(hr_leaders, 4)
+head(hr_leaders, 4)
+```
+
+You can summarize data in various ways based on your research questions. The example below calculates the mean HR for each league (`lgID`):
+
+```{r}
+hr_leaders %>%
+  group_by(lgID) %>%
+  summarize(mean_hr = mean(HR))
+
+```
+
+## Simulation
+
+### Random Number Generation
+
+* Sampling with Replacement
+`sample(1:6, 3, replace = TRUE)` demonstrates random sampling with replacement. It selects 3 random numbers from the range 1 to 6 with the possibility of picking the same number more than once.
+
+* Sampling without Replacement -`sample(1:6, 3, replace = FALSE)` shows random sampling without replacement. It selects 3 unique random numbers from the range 1 to 6.
+
+* Sampling from a Uniform Distribution - `runif(5, 0, 1)` generates 5 random numbers from a uniform distribution between 0 and 1.
+
+### Probability Calculation - Rolling Dice
+
+The custom function any6 is defined to simulate the scenario of rolling 4 dice and calculating the probability of getting at least one 6.
+
+```{r}
+any6 <- function(i) {
+  any(sample(1:6, 4, replace = TRUE) == 6)
+}
+
+```
+
+A Monte Carlo simulation is performed to estimate this probability. It's done by running the any6 function many times and calculating the proportion of times you get at least one 6.
+
+```{r}
+results <- map_dbl(1:1000000, any6)
+mean(results)
+```
+
+### Monte Carlo Simulation
+A theoretical calculation of the same probability is provided for reference: 1 - (5/6)^4. The Monte Carlo simulation result should be close to this value.
+
+### Probability of Getting at Least One 6 in N Dice
+
+The `any6` function is extended to calculate the probability of getting at least one 6 when rolling n dice.
+
+```{r}
+any6n <- function(n) {
+  any(sample(1:6, n, replace = TRUE) == 6)
+}
+any6n(1)
+results <- map_dbl(1:100, any6n)
+```
+
+## Bootstrapping
+
+Bootstrapping is used to estimate statistics, specifically the mean, for a particular year (2000) from the Teams dataset. It randomly samples HR data with replacement and calculates the mean, repeating this process many times.
+
+The standard error estimate and quantiles are computed to understand the distribution of means.
+
+```{r}
+nsim <- 1000
+boots <- 1:nsim %>%
+  map_dbl( ~ Teams %>%
+             filter(yearID == 2000) %>%
+             pull(HR) %>%
+             sample(replace = TRUE) %>% 
+             mean())
+
+sd(boots)
+quantile(boots, c(0.025, 0.5, 0.975))
+
+ggplot(tibble(boots), aes(boots)) +
+  geom_histogram()
+```
+
+
+*** On your Own..
+
+Simulating Pi:
+
+1. Randomly sample points from a square with side length 2 and check if they fall inside the unit circle. Use this simulation to estimate the value of pi.
+Hurricane Damage:
+
+2. Simulate the monetary amount of damage caused by hurricanes in Florida. Assumptions are made about the number of hurricanes and the probability of severity. Calculate the average monetary damage and the probability of damage exceeding a certain threshold (e.g., $1 billion).
