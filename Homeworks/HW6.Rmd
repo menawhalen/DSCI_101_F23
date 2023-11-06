@@ -1,0 +1,15 @@
+---
+title: "Homework 6"
+author: "Your Name Here"
+date: "2023-11-14"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+You are playing Dungeons and Dragons. You are an Elf named Steve and you come up against a Orc named Mobrukk Pride Bruiser. You must battle. In order to defeat the Mobrukk you must do the following:
+
+(a) Roll a 6 sided die and call this number n.
+(b) You now get n 20 sided dice and you roll all of them.
+
+You defeat the Mobrukk if ANY of the n 20 sided die display a prime number. What is the probability that you defeat Mobrukk? (Run a large number of simulations.)
