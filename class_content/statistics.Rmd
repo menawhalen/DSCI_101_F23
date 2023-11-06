@@ -1,0 +1,226 @@
+---
+title: "Statistics"
+author: "Your Name Here"
+date: "2023-11-06"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# Statistical Foundations
+## Population vs Sample
+### Population is EVERYTHING. Sample is a subset of the population.
+
+In statistics, we often deal with two fundamental concepts: population and sample. The **population** refers to the entire set of items or individuals under study. For example, if we're interested in the average height of all adults in a country, the population would include every adult in that country.
+
+On the other hand, a **sample** is a smaller group of individuals or items that we select from the population. Sampling is a practical approach when it's not feasible to collect data from every member of the population, which is often the case due to time, cost, or other constraints.
+
+## Sample Statistics
+### What is a "statistic"?
+
+A **statistic** is a numerical value or measure that summarizes some aspect of a sample. It's essentially a calculated value that provides insights into a specific characteristic of the sample data. Common examples of statistics include the mean (average), median (middle value), and standard deviation (a measure of data dispersion/spread).
+
+## Sampling Distribution
+How accurate is my statistic? Let's create a population and sample from it.
+
+Now, let's delve into the idea of the sampling distribution. When we calculate a statistic (e.g., the sample mean), we want to understand how well it represents the true population parameter (e.g., the population mean). In practice, we usually don't have access to the entire population, so we rely on samples.
+
+The code provided illustrates this concept using a simulated example:
+
+```{r}
+set.seed(1234)
+N <- 1000000
+pop <- rnorm(N, 0, 1)
+```
+
+Here, we're simulating a population of one million data points with a normal distribution (mean 0, standard deviation 1). Think of this as the entire dataset representing the characteristics of some population.
+
+Now, we create a sample:
+
+```{r}
+n <- 100
+d <- sample(pop, n, replace = FALSE)
+xbar <- mean(d)
+xbar
+```
+
+We randomly sample 100 data points from the population. In this case, xbar represents the sample mean, which is our estimate of the population mean based on this sample.
+
+But, this is just one sample from the population. To understand how well our sample statistic (mean) represents the entire population, we need to create many samples and examine the sampling distribution.
+
+```{r, message=FALSE}
+getxbar <- function(i) {
+    n <- 100
+    d <- sample(pop, n, replace = FALSE)
+    xbar <- mean(d)
+    return(xbar)
+}
+
+library(tidyverse)
+nsim <- 10000
+results <- map(1:nsim, getxbar)
+values <- unlist(results)
+
+#mean(values)
+#sd(values)
+```
+
+In this code, we define a function `getxbar` that repeatedly takes a sample of 100 data points and calculates the mean. We do this 10,000 times, resulting in a distribution of sample means. The key takeaway is that these sample means have their own distribution, and this distribution is called the *sampling distribution*.
+
+We can compute statistics for this sampling distribution, like the mean and standard deviation, to understand how accurately our sample statistic (mean) represents the population parameter.
+
+For instance, the mean of all the sample means (`values`) should be close to the true population mean (0 in this case), and the standard deviation (`sd(values)`) gives us an idea of how much the sample means vary from one another and from the true population mean. This is essential for making statistical inferences based on our samples.
+
+## The Bootstrap - Estimating Standard Errors
+**Estimating standard errors**: The bootstrap is a resampling technique used to estimate standard errors and confidence intervals for sample statistics. It's particularly useful when you don't know the underlying data distribution.
+Example:
+
+```{r}
+N <- 1000000
+pop <- rnorm(N, 0, 1)
+
+n <- 100
+d <- sample(pop, n, replace = FALSE)
+xbar <- mean(d)
+
+bootxbar <- function(i) {
+    n <- length(d)
+    dboot <- sample(d, n, replace = TRUE)
+    xbar <- mean(dboot)
+    return(xbar)
+}
+
+nsim <- 10000
+results <- map_dbl(1:nsim, bootxbar)
+
+sd(results)
+
+tibble(results) %>% 
+  ggplot(aes(results)) +
+  geom_histogram()
+```
+
+In this code, we use bootstrapping to estimate the standard error of the sample mean (`xbar`). We resample from our sample (`d`) with replacement to create a distribution of sample means. The standard deviation of these means provides an estimate of the standard error.
+
+## Outliers
+* Outliers are data points that significantly deviate from the rest of the dataset. Their presence can have various causes, including measurement errors or genuine extreme values. How outliers are treated depends on their origin.
+
+  * Data Irregularities or Errors: Outliers resulting from data recording errors or irregularities should be corrected.
+
+  * Important Insights: Outliers that represent rare or exceptional occurrences should not be removed without a clear rationale. They may provide valuable insights and should be reported.
+
+## Statistical Models
+Statistical Models: Statistical models are structures that allow us to relate variables to one another. They are used for various purposes, including prediction, inference, and explanation. It's important to remember that no model perfectly represents reality, but some models can be highly useful.
+
+Example: Analyzing the relationship between teacher salaries and SAT scores:
+
+```{r}
+library(mdsr)
+library(tidyverse)
+ SAT_2010 <- SAT_2010 %>%
+  mutate(Salary = salary/1000)
+SAT_plot <- ggplot(data = SAT_2010, aes(x = Salary, y = total)) + 
+  geom_point() + 
+  geom_smooth(method = "lm") + 
+  ylab("Average total score on the SAT") + 
+  xlab("Average teacher salary (thousands of USD)")
+SAT_plot
+```
+
+Visualization of teachers salaries and student's SAT scores.. As their scores go down teachers salaries go up? Is this how these variables are related?
+
+Let's look at the model.
+
+```{r}
+SAT_mod1 <- lm(total ~ Salary, data = SAT_2010)
+broom::tidy(SAT_mod1)
+
+```
+
+## Confounding and Accounting for Other Factors
+ Confounding occurs when an observed association between two variables is actually due to a third variable. It's important to account for confounders to avoid drawing incorrect conclusions. Models that include confounding variables help disentangle relationships.
+
+Let's examine our previous example:
+```{r}
+
+SAT_2010 %>%
+  skim(sat_pct)
+## who takes the SAT vs ACT
+
+SAT_2010 <- SAT_2010 %>%
+  mutate(SAT_grp = ifelse(sat_pct <= 27, "Low", "High"))
+SAT_2010 %>%
+  group_by(SAT_grp) %>%
+  count()
+```
+
+```{r}
+SAT_plot %+% SAT_2010 + 
+  aes(color = SAT_grp) + 
+  scale_color_brewer("% taking\nthe SAT", palette = "Set2")
+```
+
+
+Look how the relationship changes after we separate the states that do or do not take SAT.
+
+## The Perils of the p-value
+P-values are widely used in hypothesis testing, but they come with important considerations:
+
+* P-values indicate compatibility with a model.
+* They do not measure the probability that a hypothesis is true.
+* Relying solely on p-values is not advisable. Consider effect size and confidence intervals.
+* Transparency and reporting of actual p-values are crucial.
+* A p-value doesn't provide information about effect size.
+* Be cautious with multiple testing.
+
+The understanding and responsible use of p-values are essential for sound statistical analysis.
+
+Remember that statistics is a broad and complex field, and these are just introductory concepts. Each area, from bootstrapping to modeling and hypothesis testing, has its own rich theory and practical considerations.
+
+***On Your Own***
+
+1. **Scenario**: You're working in a factory that produces a specific product, such as light bulbs, and your goal is to ensure the quality of these products. Your specific task is to estimate the average lifespan of these light bulbs.
+
+Part 1: Sampling
+
+What is the population here? Create a hypothetical population of light bulbs and their "lifespan". Explain the process of sampling in the context of your task. Detail how you would randomly select a certain number of light bulbs from a production batch to obtain a representative sample.
+
+Part 2: Data Collection
+
+Describe how you would simulate the collection of data. In this simulation, randomly selecting a sample of light bulbs (e.g., 30 bulbs) from a hypothetical production run. Explain the importance of recording the lifespans of these selected bulbs in a dataset. 
+
+Part 3: Sampling Distribution
+
+Outline the steps to repeat the data collection process multiple times (e.g., 1000 simulations). Will you get the same average lifespan each time you repeat this process? Will your neighbor get the same average lifespan when they are done?
+
+Part 4: Plotting the Sampling Distribution
+
+How do you visualize all these results? 
+
+Part 5: Estimation
+
+How do you summarize it into numbers (center/spread)? Compare with neighbors. Did you all use the same mean and variance for your population?
+
+2. Using the `penguins` dataset,  estimate the mean bill depth of Adelie penguins and assess the uncertainty in this estimate using bootstrapping.
+
+Part 1: Data Preparation
+
+Load the `penguins` dataset. Then filter the data to include only the entries corresponding to Adelie penguins.
+Part 2: Initial Estimate
+
+Calculate the mean bill depth for the Adelie penguins. This is your initial point estimate for the population.
+
+Part 3: Bootstrapping
+
+To assess the variability in your estimate, perform bootstrapping. Use resampling with replacement to create 1,000 bootstrap samples of the bill depth. For each resampled dataset, calculate the mean bill depth.
+
+Create a histogram of the 1,000 bootstrapped means to visualize the sampling distribution.
+
+Part 4: Estimating Uncertainty
+
+Find the standard error of the bootstrapped means. This measures the variability in the estimate.
+Create a 95% confidence interval for the population mean bill depth based on the bootstrapped distribution.
+Discuss what the standard error and confidence interval reveal about the uncertainty in your estimate.
+
+Part 5: Repeat for other Species
+
+Can you repeat this process (in the tidyverse) for all the species of penguins and does their standard errors from bootstrapping change?
