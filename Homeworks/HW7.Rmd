@@ -1,0 +1,22 @@
+---
+title: "Homework 7"
+author: "Your Name Here"
+date: "2023-11-28"
+output: html_document
+---
+
+
+```{r}
+## Load Gestation data
+library(mosaicData)
+data(Gestation)
+```
+
+1. Find median age of the mother in this data set. Then use bootstrapping
+to estimate the standard error of the median age of the mother.
+
+2. Alcohol assumption is significantly associated with lung cancer. Name
+a variables that is likely confounding the relationship between alcohol
+consumption and lung cancer.
+
+3. Explain why overfitting in machine learning is bad.

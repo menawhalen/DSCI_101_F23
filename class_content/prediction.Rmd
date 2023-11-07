@@ -1,0 +1,214 @@
+---
+title: "Untitled"
+author: "Your Name Here"
+date: "2023-11-13"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+## Predictive Modeling
+
+Predictive modeling is a fundamental concept in data science and machine learning. It involves using data to make predictions about future or unseen observations. Here, we'll discuss various aspects of predictive modeling with a focus on practical applications.
+
+### Inference vs. Prediction
+
+In the context of predictive modeling, it's essential to understand the difference between inference and prediction.
+
+- **Inference** is the process of seeking insights into the relationships and patterns within the available data. It's like being a detective trying to understand the underlying mechanisms. For instance, if you're analyzing healthcare data, inference might help you explore how lifestyle choices, such as diet and exercise, relate to the occurrence of chronic diseases. Inference is typically achieved through techniques like statistical hypothesis testing, confidence intervals, and p-values. It's about gaining a deeper understanding of the data and drawing conclusions about the population based on the sample.
+
+- **Prediction**, on the other hand, is more like being a fortune-teller. You're focused on using the information available in your dataset to forecast future outcomes or make decisions about unseen data. Consider it as trying to predict whether a new patient is likely to develop a particular health condition based on historical patient records. Predictive modeling techniques, such as regression and classification, are designed for this purpose. Prediction aims to create models that generalize well to new, unseen observations.
+
+It's important to note that while inference and prediction are distinct goals, they are not mutually exclusive. Often, predictive modeling might involve some level of inference to understand which features are most relevant for prediction.
+
+### Cross Validation
+
+Cross-validation is an indispensable technique in predictive modeling for evaluating how well a model is likely to perform on new, unseen data. It's like stress-testing a car before taking it on a long road trip.
+
+The most common form of cross-validation is k-fold cross-validation. Imagine you have your dataset, and you divide it into "k" equally sized parts or "folds." You then train your model "k" times, each time using a different fold as a testing set and the remaining folds as the training set. This process helps assess the model's generalization performance. It's like simulating how your model will fare when faced with different unseen data scenarios.
+
+A key advantage of cross-validation is that it helps detect problems like overfitting. Overfitting occurs when your model becomes too tailored to the training data, capturing noise and not the true patterns. Cross-validation gives you an estimate of how your model will perform on new data and helps you choose a model that balances between underfitting and overfitting.
+
+
+### Overfitting and Underfitting
+
+In predictive modeling, the twin challenges of overfitting and underfitting are central to creating models that perform optimally on new, unseen data.
+
+* **Overfitting** occurs when a model is excessively complex. Imagine a model that is so intricately tailored to the training data that it captures even the smallest quirks and fluctuations. While this may lead to superb performance on the training data, it often fails when applied to new, unseen data. It's like a memorization exercise without true comprehension. Overfit models generalize poorly because they essentially memorize the noise in the data rather than the genuine patterns.
+
+* **Underfitting** is the opposite problem. An underfit model is overly simplistic and fails to capture the underlying patterns in the data. It's like using a straight line to model data with a clear curvilinear relationship. While underfit models are less prone to memorizing noise, they perform poorly on both the training and unseen data. They lack the necessary complexity to represent the true relationships in the data.
+
+The challenge in predictive modeling is to strike the right balance between overfitting and underfitting. This balance is achieved through model selection and tuning. Techniques like cross-validation (as mentioned earlier) help identify when a model is overfitting or underfitting. Adjusting a model's complexity, using different features, or employing regularization methods are common strategies to mitigate these issues.
+
+A well-tuned model finds that sweet spot, offering a good compromise between capturing essential patterns in the data while avoiding the pitfalls of overfitting and underfitting. This balance leads to models that perform effectively on new, unseen data, which is the ultimate goal of predictive modeling.
+
+
+### Bias vs. Variance Trade-off
+
+The bias-variance trade-off is a fundamental concept in predictive modeling. Think of it as finding the right balance between underthinking and overthinking a problem.
+
+* **Bias** refers to the error introduced by using an overly simplistic model to approximate a real-world problem. It's like trying to fit a straight line to data that clearly has a nonlinear relationship. A highly biased model will fail to capture the underlying patterns in the data and will lead to underfitting. Underfit models tend to be too simple to provide meaningful predictions.
+
+* **Variance**, on the other hand, is the error introduced by using an overly complex model that captures noise instead of genuine patterns. It's like fitting an intricate, wiggly line to data when a simpler curve suffices. Models with high variance are prone to overfitting. Overfit models perform exceedingly well on the training data but fail to generalize to new, unseen data.
+
+Balancing bias and variance is crucial because, in practice, we want models that generalize well to new data. Achieving this balance is like Goldilocks finding the "just right" porridge—not too hot (high variance) and not too cold (high bias).
+
+### Predictive Modeling Example
+
+Let's consider an example where we aim to predict high incomes (earning more than $50,000) using a dataset containing various attributes. Here's a breakdown of the steps:
+
+1. **Data Preparation**: We load a dataset, in this case, from a URL, and inspect its structure using `glimpse`.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(mdsr)
+url <-
+"http://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
+census <- read_csv(
+  url,
+  col_names = c(
+    "age", "workclass", "fnlwgt", "education", 
+    "education_1", "marital_status", "occupation", "relationship", 
+    "race", "sex", "capital_gain", "capital_loss", "hours_per_week", 
+    "native_country", "income"
+  )
+) %>%
+  mutate(income = factor(income))
+glimpse(census)
+```
+
+2. **Data Splitting**: We split the data into training and testing sets using `initial_split`. This division is crucial for assessing model performance.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidymodels)
+set.seed(417)
+n <- nrow(census)
+census_parts <- census %>%
+  initial_split(prop = 0.8)
+
+train <- census_parts %>%
+  training()
+
+test <- census_parts %>%
+  testing()
+
+```
+
+
+3. **Initial Analysis**: We calculate the fraction of high earners in the training dataset.
+
+```{r}
+list(train, test) %>%
+  map_int(nrow)
+
+
+pi_bar <- train %>%
+  count(income) %>%
+  mutate(pct = n / sum(n)) %>%
+  filter(income == ">50K") %>%
+  pull(pct)
+#fraction of high earners.
+pi_bar
+
+```
+
+
+4. **Baseline Model**: We create a baseline logistic regression model (`mod_null`) to predict high income based on a single predictor (intercept). The baseline helps us understand the starting point for prediction.
+
+```{r}
+mod_null <- logistic_reg(mode = "classification") %>%
+  set_engine("glm") %>%
+  fit(income ~ 1, data = train)
+
+mod_null
+
+exp(-1.154) /(1+exp(-1.154 )) ## same as pi_bar
+```
+
+
+5. **Evaluating the Baseline Model**: We assess the accuracy of the baseline model using `yardstick` and examine the confusion matrix.
+
+```{r}
+library(yardstick)
+pred <- train %>%
+  select(income, capital_gain) %>%
+  bind_cols(
+    predict(mod_null, new_data = train, type = "class")
+  ) %>%
+  rename(income_null = .pred_class)
+accuracy(pred, income, income_null)
+
+```
+
+
+6. **Model Improvement**: We build an improved logistic regression model (`mod_log_1`) that considers the `capital_gain` variable as a predictor.
+
+```{r}
+confusion_null <- pred %>%
+  conf_mat(truth = income, estimate = income_null)
+confusion_null
+
+mod_log_1 <- logistic_reg(mode = "classification") %>%
+  set_engine("glm") %>%
+  fit(income ~ capital_gain, data = train)
+mod_log_1
+```
+
+7. **Visualizing the Model**: We use `ggplot` to visualize the relationship between `capital_gain` and the likelihood of high income. This step helps us understand how the model makes predictions.
+
+```{r}
+train_plus <- train %>%
+  mutate(high_earner = as.integer(income == ">50K"))
+
+ggplot(train_plus, aes(x = capital_gain, y = high_earner)) + 
+  geom_count(
+    position = position_jitter(width = 0, height = 0.05), 
+    alpha = 0.5
+  ) + 
+  geom_smooth(
+    method = "glm", method.args = list(family = "binomial"), 
+    color = "dodgerblue", lty = 2, se = FALSE
+  ) + 
+  geom_hline(aes(yintercept = 0.5), linetype = 3) + 
+  scale_x_log10(labels = scales::dollar)
+
+```
+
+
+8. **Model Evaluation**: We evaluate the improved model's accuracy and examine its confusion matrix. This allows us to assess whether our model is better at predicting high incomes.
+
+```{r}
+pred <- pred %>%
+  bind_cols(
+    predict(mod_log_1, new_data = train, type = "class")
+  ) %>%
+  rename(income_log_1 = .pred_class)
+
+confusion_log_1 <- pred %>%
+  conf_mat(truth = income, estimate = income_log_1)
+
+confusion_log_1
+
+accuracy(pred, income, income_log_1)
+
+broom::tidy(mod_log_1)
+
+```
+
+
+9. **Model Parameters**: We calculate the predicted probability of high income for different values of `capital_gain`.
+
+```{r}
+#Predicted probability
+#Capital gains = 100
+exp(- 1.39 + 0.000334*100)/(1+exp(- 1.39 + 0.000334*100))
+
+#Capital gains = 10000
+exp(- 1.39 + 0.000334*10000)/(1+exp(- 1.39 + 0.000334*10000))
+#Capital gains = 100000
+exp(- 1.39 + 0.000334*100000)/(1+exp(- 1.39 + 0.000334*100000))
+```
+
+In this example, we're making predictions based on an individual's capital gain. We've explored the process of creating, improving, and evaluating predictive models.
+
+Remember, predictive modeling is a vast field with various techniques, and it's important to select the most suitable method based on your specific problem and data.
+
