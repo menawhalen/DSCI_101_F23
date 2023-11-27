@@ -7,6 +7,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-1. Create a plotly side by side plots of Chicago neighborhoods by their fail proportions of health inspections for the years 2018-2023. (Remove long/lat labels ?theme() and filter out NA community area.)
+1. Create a plotly animation plot of Chicago neighborhoods by their fail proportions of food health inspections for the all the years present in the data. (Remove long/lat labels ?theme() and filter out NA community area, https://plotly.com/ggplot2/animations/ )
 
 Compare the changes in inspection fail rates over time.
