@@ -1,0 +1,12 @@
+---
+title: "Homework 8"
+author: "Your Name Here"
+date: "2023-12-07"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+1. Create a plotly side by side plots of Chicago neighborhoods by their fail proportions of health inspections for the years 2018-2023. (Remove long/lat labels ?theme() and filter out NA community area.)
+
+Compare the changes in inspection fail rates over time.

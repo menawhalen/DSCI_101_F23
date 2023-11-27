@@ -1,0 +1,152 @@
+---
+title: "Interactive Data Viz"
+author: "Your Name Here"
+date: "2023-11-27"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# Interactive Plots
+## Plotly
+
+### Scatterplot with Plotly
+
+This code creates a simple scatterplot using the plotly library with the penguins dataset. The scatterplot shows the relationship between bill length and bill depth colored by species. Here's a breakdown of the code:
+
+* plot_ly(): This function initializes the creation of a Plotly graph.
+* data = penguins: Specifies the dataset to be used, in this case, the Iris dataset.
+* x = ~bill_length_mm, y = ~bill_depth_mm, color = ~species: Defines the x and y variables for the plot and how the points will be colored.
+* type = "scatter", mode = "markers": Indicates that the type of plot is a scatter plot with markers(points).
+* layout(): This function sets the layout of the plot, including title, axis labels, and background color.
+The resulting fig object is an interactive scatterplot where you can hover over points to see details, pan, zoom, and perform other interactions.
+
+
+```{r}
+library(plotly)
+library(palmerpenguins)
+data("penguins")
+
+fig <- plot_ly(data = penguins, x = ~bill_length_mm, y = ~bill_depth_mm, color = ~species, 
+               type = "scatter", mode = "markers")%>%
+  layout(title="A Plotly Figure", legend=list(title=list(text='species')),
+         plot_bgcolor='#e5ecf6', 
+         xaxis = list( 
+           zerolinecolor = '#ffff', 
+           zerolinewidth = 2, 
+           gridcolor = 'ffff'), 
+         yaxis = list( 
+           zerolinecolor = '#ffff', 
+           zerolinewidth = 2, 
+           gridcolor = 'ffff'))
+fig
+```
+
+### More Basic Scatterplot with Plotly
+
+This code creates another scatterplot using the Iris dataset, but this time, it shows the relationship between bill length and flipper length. Here's a breakdown:
+
+* The data variables x = ~bill_length_mm, y = ~flipper_length_mm specify the x and y axes.
+* The plot type is scatter with markers.
+This scatterplot, like the previous one, is interactive and allows for exploration of data points.
+
+```{r}
+library(plotly)
+
+fig2 <- plot_ly(data = penguins, x = ~bill_length_mm, y = ~flipper_length_mm, type = "scatter", mode = "markers")
+
+fig2
+```
+
+###Plotting Markers and Lines
+
+This example is about creating a line plot with multiple traces. It uses randomly generated data. Here's what's happening:
+
+* Three random vectors (trace_0, trace_1, and trace_2) are created with 100 data points each.
+* The data data frame is created, containing these three vectors and a sequence of numbers x from 1 to 100.
+* plot_ly() initializes a plot object using this data frame.
+* Three traces are added to the plot using add_trace(). Each trace corresponds to one of the random vectors and is designated by a name ('trace 0', 'trace 1', 'trace 2').
+
+This results in a plot with three traces, where you can visualize multiple lines and markers.
+
+```{r}
+
+trace_0 <- rnorm(100, mean = 5)
+trace_1 <- rnorm(100, mean = 0)
+trace_2 <- rnorm(100, mean = -5)
+x <- c(1:100)
+
+data <- data.frame(x, trace_0, trace_1, trace_2)
+
+fig <- plot_ly(data, x = ~x)
+fig <- fig %>% add_trace(y = ~trace_0, name = 'trace 0',mode = 'lines')
+fig <- fig %>% add_trace(y = ~trace_1, name = 'trace 1', mode = 'lines+markers')
+fig <- fig %>% add_trace(y = ~trace_2, name = 'trace 2', mode = 'markers')
+
+fig
+```
+
+## Combining ggplot2 with Plotly
+
+Here, the code demonstrates how to convert a ggplot2 plot into an interactive Plotly plot. The plot is created using the babynames dataset and represents the popularity of names of The Beatles members. Here's the explanation:
+
+* A ggplot object called beatles_plot is created using ggplot2.
+* The ggplotly() function is used to convert the ggplot plot to a Plotly interactive plot.
+
+```{r}
+library(tidyverse)
+library(mdsr)
+library(babynames)
+Beatles <- babynames %>%
+  filter(name %in% c("John", "Paul", "George", "Ringo") & sex == "M") %>%
+  mutate(name = factor(name, levels = c("John", "George", "Paul", "Ringo")))
+beatles_plot <- ggplot(data = Beatles, aes(x = year, y = n)) +
+  geom_line(aes(color = name), size = 2)
+beatles_plot
+
+ggplotly(beatles_plot)
+```
+
+This shows that you can enhance static ggplot2 plots with interactivity by using ggplotly().
+
+## Interactive Tables with Datatable
+
+In this section, an interactive table is generated using the DT package. The datatable() function is used to create the table from the Beatles dataset. Here's how it works:
+
+* DT::datatable() initializes an interactive table using the Beatles dataset.
+* The options argument can be used to set various table options, like the number of rows to display per page.
+
+The result is an interactive table that allows you to sort, search, and explore the data efficiently.
+
+```{r}
+library(DT)
+datatable(Beatles, options = list(pageLength = 10))
+```
+
+### Dygraph
+This code generates an interactive time series plot showing the popularity of Beatles names over time. You can adjust the date range and explore the data dynamically. Dygraphs is a powerful tool for visualizing time-dependent information and can be customized further to suit your needs.
+
+* We filter the Beatles dataset for male names.
+* We select the relevant columns, such as year, name, and prop (popularity).
+* We use pivot_wider to reformat the data.
+* dygraph(main = "Popularity of Beatles names over time") initializes a Dygraph plot and sets the title.
+* dyRangeSelector(dateWindow = c("1900", "1980")) provides a range selector to focus on specific years.
+
+```{r}
+library(dygraphs)
+#Dygraphs
+Beatles %>% 
+  filter(sex == "M") %>% 
+  select(year, name, prop) %>%
+  pivot_wider(names_from = name, values_from = prop) %>%
+  dygraph(main = "Popularity of Beatles names over time") %>% 
+  dyRangeSelector(dateWindow = c("1900", "1980"))
+```
+
+## In class exercises
+
+Make an interactive plot that shows pass rate by month with inspection type represented by color using the inspection data from last week. Repeat this for a dygraph.
+
+```{r}
+
+
+```
