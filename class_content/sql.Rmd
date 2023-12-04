@@ -1,0 +1,142 @@
+---
+title: "SQL"
+author: "Your Name Here"
+date: "2023-12-04"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# SQL
+## Relational Databases
+Relational databases are a fundamental component of modern data management systems, organized around the principles of the relational model. In this model, data is structured into tables, where each table represents a specific entity or concept, and columns within the table define attributes of that entity. The strength of relational databases lies in their ability to establish relationships between tables through keys, facilitating efficient and systematic data retrieval. The use of standardized query languages, such as SQL (Structured Query Language), allows users to interact with these databases by performing operations like data insertion, retrieval, and manipulation. This relational structure enhances data integrity, as it minimizes redundancy and supports the normalization process, resulting in more scalable, maintainable, and comprehensible data storage systems for various applications, from business operations to scientific research.
+
+### Example
+
+Let's consider a relational database for a social media platform:
+
+1. Users Table:
+  * Columns: UserID, Username, Email, DateJoined
+
+2. Posts Table:
+  * Columns: PostID, UserID (key), Content, Timestamp
+
+3. Comments Table:
+  * Columns: CommentID, PostID (key), UserID (key), CommentText, Timestamp
+
+- The Posts table has a key UserID linking to the Users table. This establishes a connection between a post and the user who created it.
+- The Comments table has keys PostID and UserID, both linking to the Posts and Users tables. This way, each comment is associated with a specific post and the user who made the comment.
+
+**Cheat Sheet**: [SQL Cheatsheet](https://www.codecademy.com/learn/learn-sql/modules/learn-sql-queries/cheatsheet)
+
+## Introduction
+Structured Query Language (SQL) is a powerful tool for managing and manipulating relational databases. We'll explore various SQL commands using the R package `RMySQL`. We'll use the [IMDb database](https://www.cl.cam.ac.uk/teaching/1617/DatabasesA/relational-db-schema.html) hosted on scidb.smith.edu as our example.
+
+## Basic Commands
+Let's start with some fundamental SQL commands:
+
+* SELECT: Retrieves data from one or more tables.
+* FROM: Specifies the table from which to retrieve data.
+* WHERE: Filters the results based on a condition.
+* ORDER BY: Sorts the result set.
+
+What are the tidyverse equivalents for these functions?
+
+### Other Common Commands
+* LIKE: Searches for a specified pattern in a column.
+* DISTINCT: Returns unique values in a column.
+* BETWEEN: Filters the result set within a range.
+* LIMIT: Constrains the number of rows returned.
+* AND and OR: Combines conditions in a WHERE clause.
+* AS: Renames a column or table with an alias.
+* Wildcards % and _: Represents zero or more characters or a single character.
+
+### Aggregation
+* GROUP BY: Groups rows based on a column.
+* Aggregate Functions: Functions like COUNT, SUM, AVG, etc., for summarizing data.
+
+### Working with Multiple Tables
+* LEFT JOIN: Returns all records from the left table and matched records from the right table.
+* CROSS JOIN: Returns the Cartesian product of the two tables.
+* INNER JOIN: Returns only the matched records between two tables.
+
+## Order
+
+Generally the order you should make calls in is:
+
+- SELECT
+- FROM
+- JOIN
+- WHERE
+- GROUP BY
+- ORDER BY
+
+
+## Connecting to the Database
+
+Let's establish a connection to the IMDb database:
+```{r}
+library(tidyverse)
+library(RMySQL)
+db <- dbConnect(
+  MySQL(),
+  host = "scidb.smith.edu",
+  user = "sds192",
+  password = "DSismfc@S",
+  dbname = "imdb"
+)
+```
+
+Checking the class of the database object:
+```{r}
+class(db)
+```
+
+Listing the tables in the database:
+```{r}
+dbListTables(db)
+```
+
+Reading a table into R:
+```{r, eval=FALSE}
+test <- dbReadTable(db, "cast_info")
+## this is huge an may take a lot of time
+```
+
+## Running SQL Queries
+Now, let's execute some SQL queries:
+
+1. Retrieving records from the `title` table:
+
+```{r}
+q <- "SELECT *
+FROM title
+WHERE title LIKE '%The Empire Strikes Back%'
+AND kind_id = 1;"
+
+result = dbSendQuery(db, q)
+fetch(result)
+
+```
+
+2. Joining tables to get specific information:
+```{r}
+q <- "SELECT t.title, t.production_year, cn.name
+FROM cast_info ci
+JOIN title t ON ci.movie_id = t.id
+JOIN char_name cn ON cn.id = ci.person_role_id
+WHERE ci.person_id = 2977372
+  AND t.kind_id = 1
+  AND ci.role_id = 2
+ORDER BY production_year;"
+
+result = dbSendQuery(db, q)
+fetch(result)
+
+```
+
+***
+On your own...
+
+1. Find the most common character names by decade.
+2. Identify the actor who has played themselves the most.
